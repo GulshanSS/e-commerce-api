@@ -1,7 +1,7 @@
 const Validator = require("validator");
 const isEmpty = require("is-empty");
 
-module.exports = function validateProduct(req, res) {
+module.exports = function validateProduct(req, res, next) {
     let errors = {};
     req.body.name = !isEmpty(req.body.name) ? req.body.name : "";
     req.body.prices = !isEmpty(req.body.prices) ? req.body.prices : "";
