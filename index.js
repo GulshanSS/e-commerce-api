@@ -8,6 +8,7 @@ require("dotenv").config();
 const PORT = process.env.PORT;
 
 config.DBConfig();
+app.use(express.json());
 
 app.use("/product", ProductRoutes);
 app.use("/user", UserRoutes);
