@@ -19,4 +19,13 @@ module.exports = {
                     .json({ msg: "Error while saving the product" });
             });
     },
+
+    productGetOne: (req, res) => {
+        Product.findById({ _id: req.params.id }, (err, product) => {
+            if (!err) {
+                return res.status(201).json(product);
+            }
+            return res.status(404).json({ msg: "Product not found" });
+        });
+    },
 };
