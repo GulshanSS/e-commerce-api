@@ -5,7 +5,7 @@ const { ProductController } = require("../controllers");
 const { validateProduct } = require("../middlewares/validation");
 
 Product.post("/", validateProduct, ProductController.productAdd);
-Product.get("/:id", ProductController.productGetOne);
+Product.get("/:id/details", ProductController.productGetOne);
 Product.put("/:id/update", ProductController.productUpdate);
 Product.delete("/:id/delete", ProductController.productDelete);
 Product.get("/getAll", ProductController.productGetAll);
