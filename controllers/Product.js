@@ -1,22 +1,38 @@
 const { Product } = require("../models");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryPreSets } = require("../config");
 
 module.exports = {
     productAdd: (req, res) => {
-        const product = new Product({
-            name: req.body.name,
-            price: req.body.price,
-            details: req.body.details,
-            section: req.body.section,
-        });
-        product
-            .save()
-            .then(() => {
-                return res.status(201).json({ msg: "Product Saved" });
+        cloudinary.uploader
+            .upload(req.body.image, CloudinaryPreSets(req, res))
+            .then((result) => {
+                const product = new Product({
+                    name: req.body.name,
+                    price: req.body.price,
+                    details: req.body.details,
+                    section: req.body.section,
+                    img: {
+                        cloudinary_ID: result.public_id,
+                        path: result.url,
+                    },
+                });
+                product
+                    .save()
+                    .then(() => {
+                        return res.status(201).json({ msg: "Product Saved" });
+                    })
+                    .catch((err) => {
+                        return res
+                            .status(404)
+                            .json({ msg: "Error while saving the product" });
+                    });
             })
             .catch((err) => {
+                console.log(err);
                 return res
                     .status(404)
-                    .json({ msg: "Error while saving the product" });
+                    .json({ msg: "Please check with the image" });
             });
     },
 
