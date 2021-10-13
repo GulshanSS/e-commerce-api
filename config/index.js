@@ -15,13 +15,4 @@ module.exports.CloudinaryConfig = () => {
     });
 };
 
-module.exports.CloudinaryPreSets = (req, res) => {
-    return {
-        folder: `eCommerce/products/${req.body.section}`,
-        use_filename: true,
-        filename_override: `${req.body.name}-${new Date().toLocaleDateString(
-            "en-US"
-        )}`,
-        unique_filename: false,
-    };
-};
+
