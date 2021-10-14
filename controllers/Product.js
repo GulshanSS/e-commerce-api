@@ -30,8 +30,8 @@ module.exports = {
         .then(() => {
           return res.status(201).json({ msg: "Product Saved" });
         })
-        .catch((err) => {
-          throw new Error("Error while saving the product");
+        .catch(() => {
+          return res.status(404).json({ msg: "Error saving product details" });
         });
     } catch (err) {
       return res.status(404).json({ msg: err });
@@ -39,38 +39,41 @@ module.exports = {
   },
 
   productGetOne: (req, res) => {
-    try {
-      Product.findById({ _id: req.params.id }, (err, product) => {
-        if (!err) {
-          return res.status(201).json(product);
-        } else {
-          throw new Error("Product not found");
-        }
+    Product.findById({ _id: req.params.id })
+      .then((product) => {
+        return res.status(201).json(product);
+      })
+      .catch((err) => {
+        return res.status(404).json({ msg: "Product not found" });
       });
-    } catch (err) {
-      return res.status(404).json({ msg: err });
-    }
   },
 
   productUpdate: (req, res) => {
     let imageDetails = {};
+    //Product Find By ID
     Product.findById(req.params.id)
       .then(async (product) => {
         if (req.body.image) {
+          // Image Upload
           imageDetails = await Cloudinary.CloudinaryUpload(
             req.body.image,
             req.body.section,
             req.body.name
           );
           if (
+            // Check if Cloudinary ID of previous image is not equals to default Public ID
             product.img.cloudinary_ID != process.env.PRODUCT_DEFAULT_PUBLIC_ID
           ) {
-            await cloudinary.uploader.destroy(product.img.cloudinary_ID);
+            await cloudinary.uploader.destroy(product.img.cloudinary_ID); // Delete image
           }
         } else {
           imageDetails = product.img;
         }
-        Product.findByIdAndUpdate(
+        return imageDetails;
+      })
+      .then((imageDetails) => {
+        // Update Data
+        return Product.findByIdAndUpdate(
           { _id: req.params.id },
           {
             $set: {
@@ -81,20 +84,15 @@ module.exports = {
               img: imageDetails,
             },
           }
-        )
-          .then(() => {
-            return res.status(200).json({ msg: "Product Updated" });
-          })
-          .catch((err) => {
-            return res
-              .status(404)
-              .json({ msg: "Error while updating the product" });
-          });
+        );
       })
-      .catch((err) => {
-        return res
-          .status(404)
-          .json({ msg: "Error while updating the product" });
+      .then((product) => {
+        return res.status(200).json({ msg: "Product Updated" });
+      })
+      .catch(async (err) => {
+        await cloudinary.uploader.destroy(imageDetails.cloudinary_ID); // Delete image
+        if (typeof err != "string") err = "Could not update Data";
+        return res.status(404).json({ msg: err });
       });
   },
 
@@ -109,16 +107,14 @@ module.exports = {
   },
 
   productGetAll: (req, res) => {
-    try {
-      Product.find({}, (err, products) => {
-        if (products) {
-          return res.status(200).json(products);
-        } else {
-          throw new Error("Error while fetching all products");
-        }
+    Product.find({})
+      .then((products) => {
+        return res.status(200).json(products);
+      })
+      .catch((err) => {
+        return res
+          .status(404)
+          .json({ msg: "Error while fetching all products" });
       });
-    } catch (err) {
-      return res.status(404).json({ msg: err });
-    }
   },
 };
