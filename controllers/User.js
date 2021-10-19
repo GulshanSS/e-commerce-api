@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { User } = require("../models");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   userRegister: (req, res) => {
@@ -28,19 +29,39 @@ module.exports = {
       });
   },
   userLogin: (req, res) => {
-    User.findOne({ email: req.body.email })
+    const email = req.body.email;
+    const password = req.body.password;
+    User.findOne({ email })
       .then((user) => {
-        if (user) return bcrypt.compare(req.body.password, user.password);
-      })
-      .then((result) => {
-        if (result) {
-          return res.status(201).json({ msg: "User logged in sucessfully" });
-        } else {
-          return res.status(404).json({ msg: "Login with proper Credentials" });
+        if (!user) {
+          return res.status(400).json({ msg: "Email not found" });
         }
+        bcrypt.compare(password, user.password).then((isMatch) => {
+          if (isMatch) {
+            const payload = {
+              id: user.id,
+              name: user.name,
+            };
+            jwt.sign(
+              payload,
+              "TOP_SECRET",
+              {
+                expiresIn: 31556926,
+              },
+              (err, token) => {
+                return res.status(200).json({
+                  success: true,
+                  token: `Bearer ${token}`,
+                });
+              }
+            );
+          } else {
+            return res
+              .status(400)
+              .json({ passwordIncorrect: "Password Incorrect" });
+          }
+        });
       })
-      .catch(() => {
-        return res.status(404).json({ msg: "User not found" });
-      });
+      .catch((err) => console.log(err));
   },
 };
