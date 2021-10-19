@@ -16,19 +16,19 @@ module.exports = function validateRegisterInput(req, res, next) {
   }
   if (Validator.isEmpty(req.body.email)) {
     errors.email = "Email is required";
-  } else if (!Validator.isEmail(req.body.emaill)) {
-    errors.email = "Email is not valid";
+  } else if (!Validator.isEmail(req.body.email)) {
+    errors.email = "Email is not valid";  
   }
   if (Validator.isEmpty(req.body.password)) {
     errors.password = "Password is required";
   } else if (!Validator.isLength(req.body.password, { min: 6, max: 30 })) {
     errors.password = "Password must be atleast 6 charactes long";
   }
-  if (Validator.isEmpty(req.body.mobile)) {
+  if (Validator.isEmpty((req.body.mobile).toString())) {
     errors.password = "Mobile number is required";
   } else if (typeof req.body.mobile != "number") {
     errors.mobile = "Enter number in numerics";
-  } else if (!Validator.isLength(req.body.mobile, { min: 10 })) {
+  } else if (!Validator.isLength((req.body.mobile).toString(), { min: 10 })) {
     errors.password = "Mobile Number must be atleast 10 number long";
   }
   if (Validator.isEmpty(req.body.address)) {
