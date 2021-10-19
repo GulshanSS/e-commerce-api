@@ -3,7 +3,7 @@ const { User } = require("../models");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
-  userRegister: (req, res) => {
+  Register: (req, res) => {
     bcrypt
       .hash(req.body.password, 10)
       .then((hash) => {
@@ -28,7 +28,7 @@ module.exports = {
         return res.status(404).json({ msg: "Error while adding user" });
       });
   },
-  userLogin: (req, res) => {
+  Login: (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     User.findOne({ email })
