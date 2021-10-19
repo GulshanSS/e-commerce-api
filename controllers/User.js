@@ -44,7 +44,7 @@ module.exports = {
             };
             jwt.sign(
               payload,
-              "TOP_SECRET",
+              process.env.JWT_SECRET,
               {
                 expiresIn: 31556926,
               },
@@ -58,7 +58,7 @@ module.exports = {
           } else {
             return res
               .status(400)
-              .json({ passwordIncorrect: "Password Incorrect" });
+              .json({ msg: "Password Incorrect" });
           }
         });
       })

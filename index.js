@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(passport.initialize());
 require("./config/passport")(passport);
 
-app.use("/product", ProductRoutes);
+app.use("/product", passport.authenticate('jwt', {session: false}), ProductRoutes);
 app.use("/user", UserRoutes);
 
 app.listen(PORT || 3000, () => {
