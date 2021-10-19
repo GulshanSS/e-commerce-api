@@ -97,14 +97,15 @@ module.exports = {
   },
 
   productDelete: (req, res) => {
-    Product.remove({ _id: req.params.id })
-      .then(() => {
-        return res.status(200).json({ msg: "product deleted" });
-      })
-      .catch((err) => {
-        return res.status(404).json({ msg: "Error deleting product" });
-      });
-  },
+    Product.findById({_id : req.params.id}).then(async (product)=> {
+      await cloudinary.uploader.destroy(product.img.cloudinary_ID)
+      product.remove({_id : product.id})
+    }).then(()=>{
+      return res.status(200).json({ msg: "product deleted" });
+    }).catch((err) => {
+      return res.status(404).json({ msg: "Error deleting product" });
+    });
+    },
 
   productGetAll: (req, res) => {
     Product.find({})
