@@ -23,3 +23,9 @@ module.exports.CloudinaryUpload = async (image, section, name) => {
     throw "Error Uploading Image";
   }
 };
+
+module.exports.DeleteImage = async (id) => {
+  if (id != process.env.PRODUCT_DEFAULT_PUBLIC_ID) {
+    await cloudinary.uploader.destroy(id);
+  }
+};

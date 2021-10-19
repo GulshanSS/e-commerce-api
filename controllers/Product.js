@@ -30,7 +30,8 @@ module.exports = {
         .then(() => {
           return res.status(201).json({ msg: "Product Saved" });
         })
-        .catch(() => {
+        .catch(async () => {
+          await Cloudinary.DeleteImage(imageDetails.cloudinary_ID);
           return res.status(404).json({ msg: "Error saving product details" });
         });
     } catch (err) {
@@ -60,12 +61,7 @@ module.exports = {
             req.body.section,
             req.body.name
           );
-          if (
-            // Check if Cloudinary ID of previous image is not equals to default Public ID
-            product.img.cloudinary_ID != process.env.PRODUCT_DEFAULT_PUBLIC_ID
-          ) {
-            await cloudinary.uploader.destroy(product.img.cloudinary_ID); // Delete image
-          }
+          await Cloudinary.DeleteImage(product.img.cloudinary_ID);
         } else {
           imageDetails = product.img;
         }
@@ -86,26 +82,29 @@ module.exports = {
           }
         );
       })
-      .then((product) => {
+      .then(() => {
         return res.status(200).json({ msg: "Product Updated" });
       })
       .catch(async (err) => {
-        await cloudinary.uploader.destroy(imageDetails.cloudinary_ID); // Delete image
+        await Cloudinary.DeleteImage(imageDetails.cloudinary_ID); // Delete image
         if (typeof err != "string") err = "Could not update Data";
         return res.status(404).json({ msg: err });
       });
   },
 
   productDelete: (req, res) => {
-    Product.findById({_id : req.params.id}).then(async (product)=> {
-      await cloudinary.uploader.destroy(product.img.cloudinary_ID)
-      product.remove({_id : product.id})
-    }).then(()=>{
-      return res.status(200).json({ msg: "product deleted" });
-    }).catch((err) => {
-      return res.status(404).json({ msg: "Error deleting product" });
-    });
-    },
+    Product.findById({ _id: req.params.id })
+      .then(async (product) => {
+        await cloudinary.uploader.destroy(product.img.cloudinary_ID);
+        product.remove({ _id: product.id });
+      })
+      .then(() => {
+        return res.status(200).json({ msg: "product deleted" });
+      })
+      .catch((err) => {
+        return res.status(404).json({ msg: "Error deleting product" });
+      });
+  },
 
   productGetAll: (req, res) => {
     Product.find({})
