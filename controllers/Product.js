@@ -101,7 +101,7 @@ module.exports = {
       .then(() => {
         return res.status(200).json({ msg: "product deleted" });
       })
-      .catch((err) => {
+      .catch(() => {
         return res.status(404).json({ msg: "Error deleting product" });
       });
   },
@@ -111,7 +111,7 @@ module.exports = {
       .then((products) => {
         return res.status(200).json(products);
       })
-      .catch((err) => {
+      .catch(() => {
         return res
           .status(404)
           .json({ msg: "Error while fetching all products" });

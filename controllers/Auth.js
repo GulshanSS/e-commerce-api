@@ -4,13 +4,18 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   Register: (req, res) => {
+    User.findOne({ email: req.body.mail }, (err, user) => {
+      if (!err) {
+        return res.status(200).json({ msg: "Email Already Exists...." });
+      }
+    });
     bcrypt
       .hash(req.body.password, 10)
       .then((hash) => {
         return hash;
       })
       .then((hash) => {
-        return (user = new User({
+        return new User({
           name: req.body.name,
           email: req.body.email,
           dob: Date.now(),
@@ -18,14 +23,13 @@ module.exports = {
           password: hash,
           address: req.body.address,
           gender: req.body.gender,
-        })).save();
+        }).save();
       })
-      .then((user) => {
-        console.log(user);
+      .then(() => {
         return res.status(201).json({ msg: "user Added successfully" });
       })
-      .catch((err) => {
-        return res.status(404).json({ msg: "Error while adding user" });
+      .catch(() => {
+        return res.status(404).json({ msg: "Cannot register the user..!" });
       });
   },
   Login: (req, res) => {
@@ -56,12 +60,10 @@ module.exports = {
               }
             );
           } else {
-            return res
-              .status(400)
-              .json({ msg: "Password Incorrect" });
+            return res.status(400).json({ msg: "Password Incorrect" });
           }
         });
       })
-      .catch((err) => console.log(err));
+      .catch(() => res.status(404).json({ msg: "User not found" }));
   },
 };
