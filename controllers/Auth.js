@@ -39,7 +39,7 @@ module.exports = {
           if (isMatch) {
             const payload = {
               id: user.id,
-              name: user.name,
+              role: user.role,
             };
             jwt.sign(
               payload,
