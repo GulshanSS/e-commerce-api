@@ -14,7 +14,7 @@ const UserSchema = mongoose.Schema({
         required: true,
     },
     mobile_no: {
-        type: Number,
+        type: String,
         required: true
     },
     password: {
@@ -26,6 +26,7 @@ const UserSchema = mongoose.Schema({
     },
     gender: {
         type: String,
+        enum: ['M', 'F', 'O'],
         required: true
     }
 })
