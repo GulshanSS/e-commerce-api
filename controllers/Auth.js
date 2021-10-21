@@ -4,11 +4,6 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   Register: (req, res) => {
-    User.findOne({ email: req.body.mail }, (err, user) => {
-      if (!err) {
-        return res.status(200).json({ msg: "Email Already Exists...." });
-      }
-    });
     bcrypt
       .hash(req.body.password, 10)
       .then((hash) => {
