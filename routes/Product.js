@@ -32,7 +32,5 @@ Product.get(
   grantAccess("readAny", "product"),
   ProductController.productGetAll
 );
-Product.get("/:id/addToCart", ProductController);
-Product.get("/:id/buyNow", ProductController);
 
 module.exports = Product;

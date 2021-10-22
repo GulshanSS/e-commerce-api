@@ -18,15 +18,14 @@ app.use(passport.initialize());
 require("./config/passport")(passport);
 
 app.use(createAdmin);
-app.use(roleExtraction);
 
 app.use(
   "/product",
   passport.authenticate("jwt", { session: false }),
   ProductRoutes
 );
-app.use("/", AuthRoutes);
 app.use("/user", passport.authenticate("jwt", { session: false }), UserRoutes);
+app.use("/", AuthRoutes);
 
 app.listen(PORT || 3000, () => {
   console.log(`Server Started at ${PORT}`);

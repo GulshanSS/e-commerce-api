@@ -27,6 +27,12 @@ const UserSchema = mongoose.Schema({
   address: {
     type: String,
   },
+  cart: {
+    type: [mongoose.Schema.Types.ObjectId],
+  },
+  order: {
+    type: [mongoose.Schema.Types.ObjectId],
+  },
   gender: {
     type: String,
     enum: ["M", "F", "O"],

@@ -29,12 +29,6 @@ const ProductSchema = mongoose.Schema({
     type: [],
     required: true,
   },
-  cart: {
-    type: [mongoose.Schema.Types.ObjectId],
-  },
-  order: {
-    type: [mongoose.Schema.Types.ObjectId],
-  },
   date: {
     type: Date,
     default: Date.now(),

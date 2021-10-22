@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Product } = require("../models");
 
 module.exports = {
   userGetAll: (req, res) => {
@@ -28,5 +28,68 @@ module.exports = {
       .catch((err) => {
         return res.status(404).json({ msg: "Error while deleting user" });
       });
+  },
+  userCart: (req, res) => {
+    try {
+      let cart = [];
+      req.user.cart.forEach(async (ele, i) => {
+        cart.push(await Product.findById(ele));
+      });
+      return res.status(200).json(cart);
+    } catch (err) {
+      return res.status(404).json({ msg: "No Products added to cart" });
+    }
+  },
+  userAddToCart: async (req, res) => {
+    try {
+      if (req.user.cart.find((ele) => req.params.id.equals(ele))) {
+        return res
+          .status(200)
+          .json({ msg: "Product Already Available in the cart" });
+      }
+      if (!req.user.cart) {
+        req.user.cart.push(req.user._id);
+      } else {
+        req.user.push(req.user._id);
+      }
+      await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+          cart: req.user.cart,
+        },
+      });
+      return res.status(202).json({ msg: "Product added to cart" });
+    } catch (err) {
+      console.log(err);
+      return res.status(404).json({ msg: "Failed to add to cart" });
+    }
+  },
+  userOrder: async (req, res) => {
+    try {
+      if (req.user.cart.find((ele) => req.params.id.equals(ele))) {
+        req.user.cart = [...req.user.cart].filter(
+          (ele) => !req.params.id.equals(ele)
+        );
+      }
+      req.user.order.push(req.params.id);
+      await User.findByIdAndUpdate(
+        { _id: req.user._id },
+        {
+          $set: {
+            order: req.user.order,
+            cart: product.cart,
+          },
+        }
+      );
+      const product = await Product.findById(req.params.id);
+      return res.status(202).json({
+        msg: "Product bought",
+        Summary: {
+          name: `${product.name}`,
+          price: "Rs " + `${product.price}`,
+        },
+      });
+    } catch (err) {
+      return res.status(404).json({ msg: "Unable to buy this product" });
+    }
   },
 };
