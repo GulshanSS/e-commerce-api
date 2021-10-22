@@ -8,13 +8,12 @@ module.exports = {
       );
       // Check if token has expired
       if (exp < Date.now().valueOf() / 1000) {
-        return res
-          .status(401)
-          .json({
-            error: "JWT token has expired, please login to obtain a new one",
-          });
+        return res.status(401).json({
+          error: "JWT token has expired, please login to obtain a new one",
+        });
       }
-      res.user.role = role;
+      req.user.userId = userId;
+      req.user.role = role;
       next();
     } else {
       next();

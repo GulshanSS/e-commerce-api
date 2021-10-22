@@ -1,3 +1,5 @@
+const isEmpty = require("is-empty");
+
 const { Product } = require("../models");
 const cloudinary = require("cloudinary").v2;
 const { Cloudinary } = require("../utils");
@@ -116,5 +118,54 @@ module.exports = {
           .status(404)
           .json({ msg: "Error while fetching all products" });
       });
+  },
+
+  productAddToCard: async (req, res) => {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (!product.cart) {
+        product.cart.push(req.user.userId);
+      } else {
+        product.cart.push(req.user.userId);
+      }
+      await Product.findByIdAndUpdate(req.params.id, {
+        $set: {
+          cart: cart,
+        },
+      });
+      return res.status(202).json({ msg: "Product added to cart" });
+    } catch (err) {
+      return res.status(404).json({ msg: "Failed to add to cart" });
+    }
+  },
+
+  productBuyNow: async (req, res) => {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (!isEmpty(product.cart.find((ele) => (ele = req.user.userId)))) {
+        product.cart = [...product.cart].filter((i) => i != req.user.userId);
+      }
+      if (isEmpty(product.order.find((ele) => (ele = req.user.userId)))) {
+        product.order.push(req.user.id);
+      }
+      await Product.findByIdAndUpdate(
+        { _id: req.params.id },
+        {
+          $set: {
+            cart: product.cart,
+            order: product.order,
+          },
+        }
+      );
+      return res.status(202).json({
+        msg: "Product bought",
+        Summary: {
+          name: `${product.name}`,
+          price: "Rs " + `${product.price}`,
+        },
+      });
+    } catch (err) {
+      return res.status(404).json({ msg: "Unable to buy this product" });
+    }
   },
 };
