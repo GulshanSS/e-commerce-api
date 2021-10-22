@@ -16,8 +16,6 @@ module.exports = function validateProduct(req, res, next) {
     ? Validator.trim(Validator.escape(req.body.section))
     : "";
 
-  console.log(req.body);
-
   //Name Check
   if (Validator.isEmpty(req.body.name)) {
     errors.name = "Product Name required";

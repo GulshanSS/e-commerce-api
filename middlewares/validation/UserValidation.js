@@ -75,11 +75,9 @@ module.exports = {
     req.body.email = !isEmpty(req.body.email)
       ? Validator.trim(req.body.email)
       : "";
-    console.log(req.body);
     if (!Validator.isEmail(req.body.email)) {
       errors.email = "Email is not valid";
     }
-
     return isEmpty(errors) ? next() : res.status(404).json(errors);
   },
 };
