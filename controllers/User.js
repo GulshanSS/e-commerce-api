@@ -1,4 +1,6 @@
 const { User, Product } = require("../models");
+const bcrypt = require("bcrypt");
+const isEmpty = require("is-empty");
 
 module.exports = {
   userGetAll: async (req, res) => {
@@ -92,6 +94,44 @@ module.exports = {
       });
     } catch (err) {
       return res.status(404).json({ msg: "Unable to buy this product" });
+    }
+  },
+  resetPassword: async (req, res) => {
+    try {
+      const errors = {}
+      const oldPassword = req.body.oldpassword;
+      const newPassword = req.body.newpassword;
+      const confirmPassword = req.body.confirmpassword;
+      const isMatch = await bcrypt.compare(oldPassword, req.user.password);
+      if (isMatch) {
+        if (oldPassword === newPassword) {
+          errors.match = "You can't set same password again"
+        }
+        if (newPassword != confirmPassword) {
+          errors.compare = "New password and Confirm password are not same!"
+        }else {
+          hash = await bcrypt.hash(newPassword, 10);
+          const user = await User.findByIdAndUpdate(
+            { _id: req.user._id },
+            {
+              $set: {
+                password: hash,
+              },
+            }
+          );
+          req.user = user;
+        }
+      }else {
+        errors.retry = "Incorrect old password"
+      }
+      if(isEmpty(errors)){
+        return res
+          .status(200)
+          .json({ msg: "Password has been reset sucessfully!" });
+      }
+      return res.json(errors)
+    } catch (err) {
+      return res.status(400).json({"msg" : "Couldn't reset password, try again"})
     }
   },
 };

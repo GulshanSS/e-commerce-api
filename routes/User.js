@@ -33,5 +33,9 @@ User.post(
   productCheck,
   UserController.userOrder
 );
-
+User.post(
+  "/resetpassword",
+  grantAccess("readOwn", "profile"),
+  UserController.resetPassword
+)
 module.exports = User;
