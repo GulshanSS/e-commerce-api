@@ -3,7 +3,7 @@ const passport = require("passport");
 const app = express();
 
 const config = require("./config");
-const { createAdmin, roleExtraction } = require("./middlewares/auth");
+const { createAdmin } = require("./middlewares/auth");
 const { ProductRoutes, AuthRoutes } = require("./routes");
 const { UserRoutes } = require("./routes");
 

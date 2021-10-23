@@ -6,13 +6,8 @@ const {
   validateRegisterInput,
   validateLoginInput,
 } = require("../middlewares/validation");
-const { createAdmin } = require("../middlewares/auth");
 
 Auth.post("/register", validateRegisterInput, AuthController.Register);
-Auth.post(
-  "/login",
-  validateLoginInput,
-  AuthController.Login
-);
+Auth.post("/login", validateLoginInput, AuthController.Login);
 
 module.exports = Auth;

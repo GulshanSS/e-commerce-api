@@ -10,18 +10,14 @@ const CloudinaryPreSets = (section, name) => {
 };
 
 module.exports.CloudinaryUpload = async (image, section, name) => {
-  try {
-    const result = await cloudinary.uploader.upload(
-      image,
-      CloudinaryPreSets(section, name)
-    );
-    return {
-      cloudinary_ID: result.public_id,
-      path: result.url,
-    };
-  } catch (err) {
-    throw "Error Uploading Image";
-  }
+  const result = await cloudinary.uploader.upload(
+    image,
+    CloudinaryPreSets(section, name)
+  );
+  return {
+    cloudinary_ID: result.public_id,
+    path: result.url,
+  };
 };
 
 module.exports.DeleteImage = async (id) => {

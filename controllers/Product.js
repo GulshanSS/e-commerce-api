@@ -1,6 +1,6 @@
 const isEmpty = require("is-empty");
 
-const { Product, User } = require("../models");
+const { Product } = require("../models");
 const cloudinary = require("cloudinary").v2;
 const { Cloudinary } = require("../utils");
 
@@ -8,7 +8,7 @@ module.exports = {
   productAdd: async (req, res) => {
     let imageDetails = {};
     try {
-      if (req.body.image) {
+      if (typeof req.body.image != "undefined") {
         imageDetails = await Cloudinary.CloudinaryUpload(
           req.body.image,
           req.body.section,
@@ -27,96 +27,74 @@ module.exports = {
         section: req.body.section,
         img: imageDetails,
       });
-      product
-        .save()
-        .then(() => {
-          return res.status(201).json({ msg: "Product Saved" });
-        })
-        .catch(async () => {
-          await Cloudinary.DeleteImage(imageDetails.cloudinary_ID);
-          return res.status(404).json({ msg: "Error saving product details" });
-        });
+      await product.save();
+      return res.status(201).json({ msg: "Product Saved" });
     } catch (err) {
-      return res.status(404).json({ msg: err });
+      await Cloudinary.DeleteImage(imageDetails.cloudinary_ID);
+      return res.status(404).json({ msg: "Error saving product details" });
     }
   },
 
-  productGetOne: (req, res) => {
-    Product.findById({ _id: req.params.id })
-      .then((product) => {
-        return res.status(201).json(product);
-      })
-      .catch((err) => {
-        return res.status(404).json({ msg: "Product not found" });
-      });
+  productGetOne: async (req, res) => {
+    try {
+      const product = await Product.findById({ _id: req.params.id });
+      return res.status(201).json(product);
+    } catch (err) {
+      return res.status(404).json({ msg: "Product not found" });
+    }
   },
 
-  productUpdate: (req, res) => {
-    let imageDetails = {};
-    //Product Find By ID
-    Product.findById(req.params.id)
-      .then(async (product) => {
-        if (req.body.image) {
-          // Image Upload
-          imageDetails = await Cloudinary.CloudinaryUpload(
-            req.body.image,
-            req.body.section,
-            req.body.name
-          );
-          await Cloudinary.DeleteImage(product.img.cloudinary_ID);
-        } else {
-          imageDetails = product.img;
-        }
-        return imageDetails;
-      })
-      .then((imageDetails) => {
-        // Update Data
-        return Product.findByIdAndUpdate(
-          { _id: req.params.id },
-          {
-            $set: {
-              name: req.body.name,
-              price: req.body.price,
-              details: req.body.details,
-              section: req.body.section,
-              img: imageDetails,
-            },
-          }
+  productUpdate: async (req, res) => {
+    try {
+      let imageDetails = {};
+      const product = await Product.findById(req.params.id);
+      if (typeof req.body.image != "undefined") {
+        // Image Upload
+        imageDetails = await Cloudinary.CloudinaryUpload(
+          req.body.image,
+          req.body.section || product.section,
+          req.body.name || product.name
         );
-      })
-      .then(() => {
-        return res.status(200).json({ msg: "Product Updated" });
-      })
-      .catch(async (err) => {
-        await Cloudinary.DeleteImage(imageDetails.cloudinary_ID); // Delete image
-        if (typeof err != "string") err = "Could not update Data";
-        return res.status(404).json({ msg: err });
-      });
+        await Cloudinary.DeleteImage(product.img.cloudinary_ID);
+      } else {
+        imageDetails = product.img;
+      }
+      await Product.findByIdAndUpdate(
+        { _id: req.params.id },
+        {
+          $set: {
+            name: req.body.name || product.name,
+            price: req.body.price || product.price,
+            details: req.body.details || product.details,
+            section: req.body.section || product.section,
+            img: imageDetails,
+          },
+        }
+      );
+      return res.status(200).json({ msg: "Product Updated" });
+    } catch (err) {
+      await Cloudinary.DeleteImage(imageDetails.cloudinary_ID); // Delete image
+      return res.status(404).json({ msg: "Cannot Update Data" });
+    }
   },
 
-  productDelete: (req, res) => {
-    Product.findById({ _id: req.params.id })
-      .then(async (product) => {
-        await cloudinary.uploader.destroy(product.img.cloudinary_ID);
-        product.remove({ _id: product.id });
-      })
-      .then(() => {
-        return res.status(200).json({ msg: "product deleted" });
-      })
-      .catch(() => {
-        return res.status(404).json({ msg: "Error deleting product" });
-      });
+  productDelete: async (req, res) => {
+    try {
+      const product = await Product.findById({ _id: req.params.id });
+      await cloudinary.uploader.destroy(product.img.cloudinary_ID);
+      await product.remove({ _id: product.id });
+      return res.status(200).json({ msg: "product deleted" });
+    } catch (err) {
+      return res.status(404).json({ msg: "Error deleting product" });
+    }
   },
 
-  productGetAll: (req, res) => {
-    Product.find({})
-      .then((products) => {
-        return res.status(200).json(products);
-      })
-      .catch(() => {
-        return res
-          .status(404)
-          .json({ msg: "Error while fetching all products" });
-      });
+  productGetAll: async (req, res) => {
+    try {
+      const products = await Product.find({});
+      return res.status(200).json(products);
+    } catch (err) {
+      return res.status(404).json({ msg: "Error while fetching all products" });
+    }
   },
 };

@@ -1,8 +1,11 @@
-const validateProduct = require("./ProductValidation");
-const {validateRegisterInput, validateLoginInput} = require("./UserValidation")
+const { validateProduct } = require("./ProductValidation");
+const {
+  validateRegisterInput,
+  validateLoginInput,
+} = require("./UserValidation");
 
 module.exports = {
-    validateProduct,
-    validateRegisterInput,
-    validateLoginInput
+  validateProduct,
+  validateRegisterInput,
+  validateLoginInput,
 };
