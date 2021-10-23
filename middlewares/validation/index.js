@@ -2,6 +2,7 @@ const { validateProduct, productCheck } = require("./ProductValidation");
 const {
   validateRegisterInput,
   validateLoginInput,
+  validateResetPassword,
 } = require("./UserValidation");
 
 module.exports = {
@@ -9,4 +10,5 @@ module.exports = {
   productCheck,
   validateRegisterInput,
   validateLoginInput,
+  validateResetPassword,
 };

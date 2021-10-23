@@ -3,7 +3,10 @@ const User = express.Router();
 
 const { UserController } = require("../controllers");
 const { grantAccess } = require("../middlewares/auth");
-const { productCheck } = require("../middlewares/validation");
+const {
+  productCheck,
+  validateResetPassword,
+} = require("../middlewares/validation");
 
 User.get(
   "/getAllUser",
@@ -36,6 +39,7 @@ User.post(
 User.post(
   "/resetpassword",
   grantAccess("readOwn", "profile"),
+  validateResetPassword,
   UserController.resetPassword
-)
+);
 module.exports = User;

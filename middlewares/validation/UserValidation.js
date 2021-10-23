@@ -80,4 +80,36 @@ module.exports = {
     }
     return isEmpty(errors) ? next() : res.status(404).json(errors);
   },
+  validateResetPassword: (req, res, next) => {
+    let errors = {};
+    req.body.oldpassword = !isEmpty(req.body.oldpassword)
+      ? Validator.trim(req.body.oldpassword)
+      : "";
+    req.body.newpassword = !isEmpty(req.body.newpassword)
+      ? Validator.trim(req.body.newpassword)
+      : "";
+    req.body.confirmpassword = !isEmpty(req.body.confirmpassword)
+      ? Validator.trim(req.body.confirmpassword)
+      : "";
+
+    if (Validator.isEmpty(req.body.oldpassword)) {
+      errors.oldpassword = "Old password filed can not be empty";
+    }
+    if (Validator.isEmpty(req.body.newpassword)) {
+      errors.newpassword = "New password field can not be empty";
+    } else if (!Validator.isStrongPassword(req.body.newpassword)) {
+      errors.newpassword =
+        "Password must 8 characters long and" +
+        "Must contain 1 atleast lowercase character and" +
+        "Must contain 1 atleast uppercase character and" +
+        "Must contain 1 atleast number and" +
+        "Must contain 1 atleast special symbol character";
+    }
+    if (Validator.isEmpty(req.body.confirmpassword)) {
+      errors.confirmpassword = "Confirm field can not be empty";
+    } else if (req.body.newpassword != req.body.confirmpassword) {
+      errors.comapre = "Password and it's confirmation doesn't match";
+    }
+    return isEmpty(errors) ? next() : res.status(404).json(errors);
+  },
 };
