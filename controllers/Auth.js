@@ -35,7 +35,7 @@ module.exports = {
           id: user.id,
           role: user.role,
         };
-        const { err, token } = jwt.sign(payload, process.env.JWT_SECRET, {
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: 31556926,
         });
         return res.status(200).json({

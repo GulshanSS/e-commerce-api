@@ -1,6 +1,8 @@
 const Validator = require("validator");
 const isEmpty = require("is-empty");
 
+const { Product } = require("../../models");
+
 module.exports = {
   validateProduct: (req, res, next) => {
     let errors = {};
@@ -36,5 +38,13 @@ module.exports = {
       req.body.section = Validator.trim(Validator.escape(req.body.section));
     }
     return isEmpty(errors) ? next() : res.status(404).json(errors);
+  },
+  productCheck: async (req, res, next) => {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ msg: "Product Not Found" });
+    } else {
+      next();
+    }
   },
 };

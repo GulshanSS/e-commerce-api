@@ -45,8 +45,8 @@ module.exports = {
   },
 
   productUpdate: async (req, res) => {
+    let imageDetails = {};
     try {
-      let imageDetails = {};
       const product = await Product.findById(req.params.id);
       if (typeof req.body.image != "undefined") {
         // Image Upload

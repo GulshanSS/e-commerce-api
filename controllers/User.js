@@ -39,41 +39,46 @@ module.exports = {
   },
   userAddToCart: async (req, res) => {
     try {
-      if (req.user.cart.find((ele) => req.params.id.equals(ele))) {
+      const user = await User.findById(req.user._id);
+      if (
+        user.cart.find((ele) => req.params.id.toString() === ele.toString())
+      ) {
         return res
           .status(200)
           .json({ msg: "Product Already Available in the cart" });
       }
-      if (!req.user.cart) {
-        req.user.cart.push(req.user._id);
+      if (!user.cart) {
+        user.cart.push(req.params.id);
       } else {
-        req.user.push(req.user._id);
+        user.cart.push(req.params.id);
       }
       await User.findByIdAndUpdate(req.user._id, {
         $set: {
-          cart: req.user.cart,
+          cart: user.cart,
         },
       });
       return res.status(202).json({ msg: "Product added to cart" });
     } catch (err) {
-      console.log(err);
       return res.status(404).json({ msg: "Failed to add to cart" });
     }
   },
   userOrder: async (req, res) => {
     try {
-      if (req.user.cart.find((ele) => req.params.id.equals(ele))) {
-        req.user.cart = [...req.user.cart].filter(
-          (ele) => !req.params.id.equals(ele)
+      const user = await User.findById(req.user._id);
+      if (
+        user.cart.find((ele) => req.params.id.toString() === ele.toString())
+      ) {
+        user.cart = [...user.cart].filter(
+          (ele) => req.params.id.toString() != ele.toString()
         );
       }
-      req.user.order.push(req.params.id);
+      user.order.push(req.params.id);
       await User.findByIdAndUpdate(
         { _id: req.user._id },
         {
           $set: {
-            order: req.user.order,
-            cart: product.cart,
+            order: user.order,
+            cart: user.cart,
           },
         }
       );
