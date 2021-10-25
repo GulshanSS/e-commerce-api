@@ -13,7 +13,7 @@ module.exports = {
     req.body.password = Validation.sanitizeAndValidate(req.body.password);
     req.body.address = Validation.sanitizeAndValidate(req.body.address);
     req.body.gender = Validation.sanitizeAndValidate(req.body.gender);
-
+    
     //Name checks
     if (Validator.isEmpty(req.body.name)) {
       errors.name = "Name is required";
