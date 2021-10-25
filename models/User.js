@@ -29,9 +29,11 @@ const UserSchema = mongoose.Schema({
   },
   cart: {
     type: [mongoose.Schema.Types.ObjectId],
+    ref: "product",
   },
   order: {
     type: [mongoose.Schema.Types.ObjectId],
+    ref: "product",
   },
   gender: {
     type: String,

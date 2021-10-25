@@ -4,7 +4,7 @@ const app = express();
 
 const config = require("./config");
 const { createAdmin } = require("./middlewares/auth");
-const { ProductRoutes, AuthRoutes } = require("./routes");
+const { ProductRoutes, AuthRoutes, PasswordResetRoutes } = require("./routes");
 const { UserRoutes } = require("./routes");
 
 require("dotenv").config();
@@ -26,6 +26,7 @@ app.use(
 );
 app.use("/user", passport.authenticate("jwt", { session: false }), UserRoutes);
 app.use("/", AuthRoutes);
+app.use("/password-reset", PasswordResetRoutes);
 
 app.listen(PORT || 3000, () => {
   console.log(`Server Started at ${PORT}`);
