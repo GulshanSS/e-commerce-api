@@ -6,6 +6,9 @@ module.exports = {
   userGetAll: async (req, res) => {
     try {
       const users = await User.find({});
+      if (!users) {
+        return res.status(400).json({ msg: "No Users Found" });
+      }
       return res.status(200).json(users);
     } catch (err) {
       return res.status(404).json({ msg: "Error while fetching all users" });
@@ -14,6 +17,9 @@ module.exports = {
   userGetOne: async (req, res) => {
     try {
       const user = await User.findById({ _id: req.params.id });
+      if (!user) {
+        return res.status(400).json({ msg: "User Not Found" });
+      }
       return res.status(200).json(users);
     } catch (err) {
       return res.status(404).json({ msg: "No such user with that id" });
@@ -21,8 +27,7 @@ module.exports = {
   },
   userDelete: async (req, res) => {
     try {
-      const user = User.findById({ _id: req.params.id });
-      await user.remove();
+      await User.deleteOne({ id: req.params.id, deleteApproval: true });
       return res.status(200).json({ msg: "User deleted Successfully" });
     } catch (err) {
       return res.status(404).json({ msg: "Error while deleting user" });
@@ -132,6 +137,9 @@ module.exports = {
     try {
       let updatedUsers = [];
       const product = await Product.findById(req.params.id);
+      if (!product) {
+        return res.status(400).json({ msg: "Product Not Found" });
+      }
       if (
         product.likes.users.find(
           (ele) => req.user._id.toString() === ele.toString()
@@ -151,6 +159,34 @@ module.exports = {
     } catch (err) {
       console.log(err);
       return res.status(400).json({ msg: "Error while liking the product" });
+    }
+  },
+  deleteApproval: async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(400).json({ msg: "User Not Found" });
+      }
+      user.deleteApproval = true;
+      await user.save();
+      return res.status(201).json({ msg: "Submitted for Delete Approval" });
+    } catch (err) {
+      return res.status(400).json({ msg: "Error sending Delete Approval" });
+    }
+  },
+  cancelDeleteApproval: async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return res.status(400).json({ msg: "User Not Found" });
+      }
+      user.deleteApproval = false;
+      await user.save();
+      return res
+        .status(201)
+        .json({ msg: `Delete Approval Cancel for ${user.name}` });
+    } catch (err) {
+      return res.status(400).json({ msg: "Error canceling Delete Approval" });
     }
   },
 };

@@ -48,4 +48,17 @@ User.post(
   grantAccess("readAny", "product"),
   UserController.likeProduct
 );
+
+User.post(
+  "/deleteApproval",
+  grantAccess("readOwn", "profile"),
+  UserController.deleteApproval
+);
+
+User.post(
+  "/:id/cancelDeleteApproval",
+  grantAccess("deleteAny", "profile"),
+  UserController.cancelDeleteApproval
+);
+
 module.exports = User;

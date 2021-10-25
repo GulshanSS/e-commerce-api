@@ -40,6 +40,10 @@ const UserSchema = mongoose.Schema({
     enum: ["M", "F", "O"],
     default: "O",
   },
+  deleteApproval: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("user", UserSchema);
