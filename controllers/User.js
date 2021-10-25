@@ -128,4 +128,29 @@ module.exports = {
         .json({ msg: "Couldn't reset the password, try again" });
     }
   },
+  likeProduct: async (req, res) => {
+    try {
+      let updatedUsers = [];
+      const product = await Product.findById(req.params.id);
+      if (
+        product.likes.users.find(
+          (ele) => req.user._id.toString() === ele.toString()
+        )
+      ) {
+        product.likes.count -= 1;
+        updatedUsers = [...product.likes.users].filter(
+          (ele) => req.user._id.toString() != ele.toString()
+        );
+      } else {
+        product.likes.count += 1;
+        updatedUsers.push(req.user._id);
+      }
+      product.likes.users = updatedUsers;
+      await product.save();
+      return res.status(201).json(product);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ msg: "Error while liking the product" });
+    }
+  },
 };

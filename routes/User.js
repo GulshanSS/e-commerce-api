@@ -42,4 +42,10 @@ User.post(
   validateResetPassword,
   UserController.resetPassword
 );
+
+User.post(
+  "/:id/like",
+  grantAccess("readAny", "product"),
+  UserController.likeProduct
+);
 module.exports = User;
