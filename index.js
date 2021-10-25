@@ -4,8 +4,9 @@ const app = express();
 
 const config = require("./config");
 const { createAdmin } = require("./middlewares/auth");
-const { ProductRoutes, AuthRoutes, PasswordResetRoutes } = require("./routes");
-const { UserRoutes } = require("./routes");
+const Admin = require("./routes/Admin");
+const User = require("./routes/User");
+const { AuthRoutes } = require("./routes/Auth");
 
 require("dotenv").config();
 const PORT = process.env.PORT;
@@ -19,14 +20,15 @@ require("./config/passport")(passport);
 
 app.use(createAdmin);
 
-app.use(
-  "/product",
-  passport.authenticate("jwt", { session: false }),
-  ProductRoutes
-);
-app.use("/user", passport.authenticate("jwt", { session: false }), UserRoutes);
+app.use("/product", passport.authenticate("jwt", { session: false }), [
+  Admin.ProductRoutes,
+  Admin.UserRoutes,
+]);
+app.use("/user", passport.authenticate("jwt", { session: false }), [
+  User.ProductRoutes,
+  User.ProductRoutes,
+]);
 app.use("/", AuthRoutes);
-app.use("/password-reset", PasswordResetRoutes);
 
 app.listen(PORT || 3000, () => {
   console.log(`Server Started at ${PORT}`);

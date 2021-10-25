@@ -1,9 +1,9 @@
 const express = require("express");
 const Product = express.Router();
 
-const { ProductController } = require("../controllers");
-const { validateProduct } = require("../middlewares/validation");
-const { grantAccess } = require("../middlewares/auth");
+const { ProductController } = require("../../controllers");
+const { validateProduct } = require("../../middlewares/validation");
+const { grantAccess } = require("../../middlewares/auth");
 
 Product.post(
   "/add",
@@ -11,25 +11,29 @@ Product.post(
   grantAccess("updateAny", "product"),
   ProductController.productAdd
 );
+
 Product.get(
   "/:id/details",
-  grantAccess("readAny", "product"),
+  grantAccess("updateAny", "product"),
   ProductController.productGetOne
 );
+
 Product.put(
   "/:id/update",
   grantAccess("updateAny", "product"),
   validateProduct,
   ProductController.productUpdate
 );
+
 Product.delete(
   "/:id/delete",
   grantAccess("deleteAny", "product"),
   ProductController.productDelete
 );
+
 Product.get(
   "/getAll",
-  grantAccess("readAny", "product"),
+  grantAccess("updateAny", "product"),
   ProductController.productGetAll
 );
 
