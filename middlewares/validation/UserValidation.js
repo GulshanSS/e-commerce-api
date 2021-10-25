@@ -1,27 +1,18 @@
 const Validator = require("validator");
 const isEmpty = require("is-empty");
 const { User } = require("../../models");
+const { Validation } = require("../../utils");
 
 module.exports = {
   validateRegisterInput: async (req, res, next) => {
     let errors = {};
-    req.body.name = !isEmpty(req.body.name)
-      ? Validator.trim(Validator.escape(req.body.name))
-      : "";
-    req.body.email = !isEmpty(req.body.email)
-      ? Validator.trim(req.body.email)
-      : "";
-    // req.body.dob = !isEmpty(req.body.dob) ? Validator.trim(req.body.dob) : "";
-    req.body.mobile = !isEmpty(req.body.mobile)
-      ? Validator.trim(req.body.mobile)
-      : "";
-    req.body.password = !isEmpty(req.body.password)
-      ? Validator.trim(req.body.password)
-      : "";
-    req.body.address = !isEmpty(req.body.address)
-      ? Validator.trim(Validator.escape(req.body.address))
-      : "";
-    req.body.gender = !isEmpty(req.body.gender) ? req.body.gender : "";
+    req.body.name = Validation.sanitizeAndValidate(req.body.name);
+    req.body.email = Validation.sanitizeAndValidate(req.body.email);
+    //req.body.dob = Validation.sanitizeAndValidate(req.body.dob);
+    req.body.mobile = Validation.sanitizeAndValidate(req.body.mobile);
+    req.body.password = Validation.sanitizeAndValidate(req.body.password);
+    req.body.address = Validation.sanitizeAndValidate(req.body.address);
+    req.body.gender = Validation.sanitizeAndValidate(req.body.gender);
 
     //Name checks
     if (Validator.isEmpty(req.body.name)) {
@@ -72,9 +63,7 @@ module.exports = {
   },
   validateLoginInput: (req, res, next) => {
     let errors = {};
-    req.body.email = !isEmpty(req.body.email)
-      ? Validator.trim(req.body.email)
-      : "";
+    req.body.email = Validation.sanitizeAndValidate(req.body.email);
     if (!Validator.isEmail(req.body.email)) {
       errors.email = "Email is not valid";
     }
@@ -82,15 +71,11 @@ module.exports = {
   },
   validateResetPassword: (req, res, next) => {
     let errors = {};
-    req.body.oldpassword = !isEmpty(req.body.oldpassword)
-      ? Validator.trim(req.body.oldpassword)
-      : "";
-    req.body.newpassword = !isEmpty(req.body.newpassword)
-      ? Validator.trim(req.body.newpassword)
-      : "";
-    req.body.confirmpassword = !isEmpty(req.body.confirmpassword)
-      ? Validator.trim(req.body.confirmpassword)
-      : "";
+    req.body.oldpassword = Validation.sanitizeAndValidate(req.body.oldpassword);
+    req.body.newpassword = Validation.sanitizeAndValidate(req.body.newpassword);
+    req.body.confirmpassword = Validation.sanitizeAndValidate(
+      req.body.confirmpassword
+    );
 
     if (Validator.isEmpty(req.body.oldpassword)) {
       errors.oldpassword = "Old password filed can not be empty";
@@ -115,9 +100,7 @@ module.exports = {
 
   validatePassword: (req, res, next) => {
     let errors = {};
-    req.body.password = !isEmpty(req.body.password)
-      ? Validator.trim(req.body.password)
-      : "";
+    req.body.password = Validation.sanitizeAndValidate(req.body.password);
     if (Validator.isEmpty(req.body.password)) {
       errors.password = "New password field can not be empty";
     } else if (!Validator.isStrongPassword(req.body.password)) {

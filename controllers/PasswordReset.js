@@ -1,6 +1,6 @@
 const crypto = require("crypto");
-const bcrypt = require("bcrypt");
 
+const { Bcrypt } = require("../utils");
 const { User, Token } = require("../models");
 const { SendEmail } = require("../utils");
 
@@ -41,7 +41,7 @@ module.exports = {
       if (!token)
         return res.status(400).json({ msg: "Invalid link or Expired" });
 
-      user.password = await bcrypt.hash(req.body.password, 10);
+      user.password = Bcrypt.genHash(req.body.password, 10);
       await user.save();
       await token.delete();
 

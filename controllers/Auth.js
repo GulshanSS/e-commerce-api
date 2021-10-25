@@ -1,11 +1,11 @@
-const bcrypt = require("bcrypt");
+const { Bcrypt } = require("../utils");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
   Register: async (req, res) => {
     try {
-      const hash = await bcrypt.hash(req.body.password, 10);
+      const hash = Bcrypt.genHash(req.body.password);
       const user = new User({
         name: req.body.name,
         email: req.body.email,
@@ -29,7 +29,7 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ msg: "Email not found" });
       }
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = Bcrypt.comparePass(password, user.password);
       if (isMatch) {
         const payload = {
           id: user.id,
