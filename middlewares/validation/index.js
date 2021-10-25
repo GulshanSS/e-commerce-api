@@ -3,6 +3,7 @@ const {
   validateRegisterInput,
   validateLoginInput,
   validateResetPassword,
+  validatePassword,
 } = require("./UserValidation");
 
 module.exports = {
@@ -11,4 +12,5 @@ module.exports = {
   validateRegisterInput,
   validateLoginInput,
   validateResetPassword,
+  validatePassword,
 };

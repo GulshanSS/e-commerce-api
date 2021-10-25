@@ -112,4 +112,22 @@ module.exports = {
     }
     return isEmpty(errors) ? next() : res.status(404).json(errors);
   },
+
+  validatePassword: (req, res, next) => {
+    let errors = {};
+    req.body.password = !isEmpty(req.body.password)
+      ? Validator.trim(req.body.password)
+      : "";
+    if (Validator.isEmpty(req.body.password)) {
+      errors.password = "New password field can not be empty";
+    } else if (!Validator.isStrongPassword(req.body.password)) {
+      errors.password =
+        "Password must 8 characters long and" +
+        "Must contain 1 atleast lowercase character and" +
+        "Must contain 1 atleast uppercase character and" +
+        "Must contain 1 atleast number and" +
+        "Must contain 1 atleast special symbol character";
+    }
+    return isEmpty(errors) ? next() : res.status(404).json(errors);
+  },
 };

@@ -31,13 +31,15 @@ module.exports = {
   resetPass: async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-      if (!user) return res.status(400).send("invalid link or Expired");
+      if (!user)
+        return res.status(400).json({ msg: "Invalid link or Expired" });
 
       const token = await Token.findOne({
         userId: user._id,
         token: req.params.token,
       });
-      if (!token) return res.status(400).send("Invalid link or Expired");
+      if (!token)
+        return res.status(400).json({ msg: "Invalid link or Expired" });
 
       user.password = await bcrypt.hash(req.body.password, 10);
       await user.save();
