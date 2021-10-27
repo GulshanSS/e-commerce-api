@@ -21,8 +21,9 @@ const UserSchema = mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "vendor"],
     default: "user",
+    required: true,
   },
   address: {
     type: String,
@@ -47,7 +48,7 @@ const UserSchema = mongoose.Schema({
   active: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 module.exports = mongoose.model("user", UserSchema);

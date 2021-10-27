@@ -21,6 +21,11 @@ const ProductSchema = mongoose.Schema({
       type: String,
     },
   },
+  vendor: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "user",
+  },
   likes: {
     count: {
       type: Number,

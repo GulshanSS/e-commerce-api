@@ -1,6 +1,6 @@
 const isEmpty = require("is-empty");
 
-const { Product } = require("../models");
+const { Product, User } = require("../models");
 const cloudinary = require("cloudinary").v2;
 const { Cloudinary } = require("../utils");
 
@@ -20,14 +20,14 @@ module.exports = {
           path: process.env.PRODUCT_DEFAULT_URL,
         };
       }
-      const product = new Product({
+      await new Product({
         name: req.body.name,
         price: req.body.price,
         details: req.body.details,
         section: req.body.section,
         img: imageDetails,
-      });
-      await product.save();
+        vendor: req.user._id,
+      }).save();
       return res.status(201).json({ msg: "Product Saved" });
     } catch (err) {
       await Cloudinary.DeleteImage(imageDetails.cloudinary_ID);
@@ -80,10 +80,10 @@ module.exports = {
 
   productDelete: async (req, res) => {
     try {
-      const product = await Product.findById({ _id: req.params.id });
+      const product = await Product.findById(req.params.id);
       await cloudinary.uploader.destroy(product.img.cloudinary_ID);
       await product.remove({ _id: product.id });
-      return res.status(200).json({ msg: "product deleted" });
+      return res.status(200).json({ msg: "Product deleted" });
     } catch (err) {
       return res.status(404).json({ msg: "Error deleting product" });
     }

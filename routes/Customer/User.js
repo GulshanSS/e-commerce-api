@@ -47,12 +47,6 @@ User.post(
 );
 
 User.post(
-  "/deleteApproval",
-  grantAccess("readOwn", "profile"),
-  UserController.deleteApproval
-);
-
-User.post(
   "/verify",
   grantAccess("readOwn", "profile"),
   EmailVerificationController.emailVerificationLink

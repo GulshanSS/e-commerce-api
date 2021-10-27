@@ -3,10 +3,6 @@ const User = express.Router();
 
 const { UserController } = require("../../controllers");
 const { grantAccess } = require("../../middlewares/auth");
-const {
-  productCheck,
-  validateResetPassword,
-} = require("../../middlewares/validation");
 
 User.get(
   "/getAllUser",

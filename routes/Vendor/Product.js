@@ -8,33 +8,21 @@ const { grantAccess } = require("../../middlewares/auth");
 Product.post(
   "/add",
   validateProduct,
-  grantAccess("updateAny", "product"),
+  grantAccess("updateOwn", "product"),
   ProductController.productAdd
-);
-
-Product.get(
-  "/:id/details",
-  grantAccess("updateAny", "product"),
-  ProductController.productGetOne
 );
 
 Product.put(
   "/:id/update",
-  grantAccess("updateAny", "product"),
+  grantAccess("updateOwn", "product"),
   validateProduct,
   ProductController.productUpdate
 );
 
 Product.delete(
   "/:id/delete",
-  grantAccess("deleteAny", "product"),
+  grantAccess("deleteOwn", "product"),
   ProductController.productDelete
-);
-
-Product.get(
-  "/getAll",
-  grantAccess("updateAny", "product"),
-  ProductController.productGetAll
 );
 
 module.exports = Product;

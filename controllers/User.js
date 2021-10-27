@@ -1,6 +1,5 @@
 const { User, Product } = require("../models");
 const bcrypt = require("bcrypt");
-const isEmpty = require("is-empty");
 
 module.exports = {
   userGetAll: async (req, res) => {
@@ -27,10 +26,18 @@ module.exports = {
   },
   userDelete: async (req, res) => {
     try {
-      await User.deleteOne({ id: req.params.id, deleteApproval: true });
+      const user = await User.findOne({
+        id: req.params.id,
+        deleteApproval: true,
+        role: "vendor",
+      });
+      if (user) {
+        await Product.deleteMany({ vendor: req.params.id });
+        await user.Remove();
+      }
       return res.status(200).json({ msg: "User deleted Successfully" });
     } catch (err) {
-      return res.status(404).json({ msg: "Error while deleting user" });
+      return res.status(404).json({ msg: "Error while deleting vendor" });
     }
   },
   userCart: (req, res) => {
@@ -163,7 +170,7 @@ module.exports = {
   },
   deleteApproval: async (req, res) => {
     try {
-      const user = await User.findById(req.user._id);
+      const user = await User.findOne({ _id: req.user._id, role: "vendor" });
       if (!user) {
         return res.status(400).json({ msg: "User Not Found" });
       }
@@ -176,9 +183,9 @@ module.exports = {
   },
   cancelDeleteApproval: async (req, res) => {
     try {
-      const user = await User.findById(req.params.id);
+      const user = await User.findOne({_id: req.params.id, role: "vendor"});
       if (!user) {
-        return res.status(400).json({ msg: "User Not Found" });
+        return res.status(400).json({ msg: "Vendor Not Found" });
       }
       user.deleteApproval = false;
       await user.save();

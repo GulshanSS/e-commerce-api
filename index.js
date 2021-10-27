@@ -5,11 +5,12 @@ const app = express();
 const config = require("./config");
 const { createAdmin } = require("./middlewares/auth");
 const Admin = require("./routes/Admin");
-const User = require("./routes/User");
+const Customer = require("./routes/Customer");
+const Vendor = require("./routes/Vendor");
+const Public = require("./routes/Public");
 const { AuthRoutes } = require("./routes/Auth");
 
 require("dotenv").config();
-const PORT = process.env.PORT;
 
 config.DBConfig();
 config.CloudinaryConfig();
@@ -21,15 +22,18 @@ require("./config/passport")(passport);
 app.use(createAdmin);
 
 app.use("/product", passport.authenticate("jwt", { session: false }), [
-  Admin.ProductRoutes,
   Admin.UserRoutes,
 ]);
-app.use("/user", passport.authenticate("jwt", { session: false }), [
-  User.ProductRoutes,
-  User.UserRoutes,
+app.use("/customer", passport.authenticate("jwt", { session: false }), [
+  Customer.UserRoutes,
 ]);
-app.use("/", AuthRoutes);
+app.use("/vendor", passport.authenticate("jwt", { session: false }), [
+  Vendor.ProductRoutes,
+  Vendor.UserRoutes,
+]);
 
-app.listen(PORT || 3000, () => {
-  console.log(`Server Started at ${PORT}`);
+app.use("/", [AuthRoutes, Public.ProductRoutes]);
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server Started at ${process.env.PORT}`);
 });
