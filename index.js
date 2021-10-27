@@ -26,7 +26,7 @@ app.use("/product", passport.authenticate("jwt", { session: false }), [
 ]);
 app.use("/user", passport.authenticate("jwt", { session: false }), [
   User.ProductRoutes,
-  User.ProductRoutes,
+  User.UserRoutes,
 ]);
 app.use("/", AuthRoutes);
 

@@ -4,6 +4,7 @@ const Auth = express.Router();
 const {
   AuthController,
   PasswordResetController,
+  EmailVerificationController,
 } = require("../../controllers");
 
 const {
@@ -20,5 +21,5 @@ Auth.post(
   validatePassword,
   PasswordResetController.resetPass
 );
-
+Auth.post("/verify/:id/:token", EmailVerificationController.verifyEmail);
 module.exports = Auth;

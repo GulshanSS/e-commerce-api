@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 module.exports = {
   Register: async (req, res) => {
     try {
-      const hash = Bcrypt.genHash(req.body.password);
+      const hash = await Bcrypt.genHash(req.body.password);
       const user = new User({
         name: req.body.name,
         email: req.body.email,
@@ -16,8 +16,9 @@ module.exports = {
         gender: req.body.gender,
       });
       await user.save();
-      return res.status(201).json({ msg: "user Added successfully" });
+      return res.status(201).json({ msg: "Registered Successfully...!" });
     } catch (err) {
+      console.log(err);
       return res.status(404).json({ msg: "Cannot register the user..!" });
     }
   },
@@ -29,7 +30,7 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ msg: "Email not found" });
       }
-      const isMatch = Bcrypt.comparePass(password, user.password);
+      const isMatch = await Bcrypt.comparePass(password, user.password);
       if (isMatch) {
         const payload = {
           id: user.id,

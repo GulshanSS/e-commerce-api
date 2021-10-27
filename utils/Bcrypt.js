@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 
 exports.genHash = async (data) => {
-  return await bcrypt.hash(data, process.env.SALT);
+  return await bcrypt.hash(data, 10);
 };
 
 exports.comparePass = async (pass, hash) => {

@@ -1,7 +1,10 @@
 const express = require("express");
 const User = express.Router();
 
-const { UserController } = require("../../controllers");
+const {
+  UserController,
+  EmailVerificationController,
+} = require("../../controllers");
 const { grantAccess } = require("../../middlewares/auth");
 const {
   productCheck,
@@ -47,6 +50,12 @@ User.post(
   "/deleteApproval",
   grantAccess("readOwn", "profile"),
   UserController.deleteApproval
+);
+
+User.post(
+  "/verify",
+  grantAccess("readOwn", "profile"),
+  EmailVerificationController.emailVerificationLink
 );
 
 module.exports = User;
