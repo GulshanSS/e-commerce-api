@@ -15,13 +15,21 @@ module.exports = {
   },
   userGetOne: async (req, res) => {
     try {
-      const user = await User.findById({ _id: req.params.id });
+      const user = await User.findById(req.params.id);
       if (!user) {
         return res.status(400).json({ msg: "User Not Found" });
       }
-      return res.status(200).json(users);
+      return res.status(200).json(user);
     } catch (err) {
       return res.status(404).json({ msg: "No such user with that id" });
+    }
+  },
+  userDetails: async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      return res.status(200).json(user);
+    } catch (err) {
+      return res.status(404).json({ msg: "Error Fetching Details" });
     }
   },
   userDelete: async (req, res) => {
@@ -183,7 +191,7 @@ module.exports = {
   },
   cancelDeleteApproval: async (req, res) => {
     try {
-      const user = await User.findOne({_id: req.params.id, role: "vendor"});
+      const user = await User.findOne({ _id: req.params.id, role: "vendor" });
       if (!user) {
         return res.status(400).json({ msg: "Vendor Not Found" });
       }

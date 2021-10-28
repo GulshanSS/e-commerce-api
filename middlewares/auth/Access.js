@@ -1,6 +1,6 @@
 const { roles } = require("../../config/roles");
 
-exports.grantAccess = function (action, resource) {
+exports.grantAccess = (action, resource) => {
   return async (req, res, next) => {
     try {
       const permission = roles.can(req.user.role)[action](resource);
@@ -14,4 +14,10 @@ exports.grantAccess = function (action, resource) {
       next(error);
     }
   };
+};
+
+exports.verifiedEmail = () => {
+  if (!req.user.active) {
+    return res.status(400).json({ msg: "Please Verify your email first" });
+  }
 };

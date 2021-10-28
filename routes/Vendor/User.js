@@ -5,22 +5,19 @@ const {
   UserController,
   EmailVerificationController,
 } = require("../../controllers");
-const { grantAccess } = require("../../middlewares/auth");
-const {
-  validateResetPassword,
-} = require("../../middlewares/validation");
+const { grantAccess, verifiedEmail } = require("../../middlewares/auth");
+const { validateResetPassword } = require("../../middlewares/validation");
 
 User.get(
-  "/:id/details",
+  "/details",
   grantAccess("readOwn", "profile"),
-  UserController.userGetOne
+  UserController.userDetails
 );
-
-User.get("/cart", grantAccess("readOwn", "product"), UserController.userCart);
 
 User.post(
   "/resetpassword",
   grantAccess("readOwn", "profile"),
+  verifiedEmail,
   validateResetPassword,
   UserController.resetPassword
 );
