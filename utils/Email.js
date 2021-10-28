@@ -25,7 +25,7 @@ exports.SendEmail = async (email, subject, text) => {
   }
 };
 
-exports.EmailVerify = async (id, email) => {
+exports.EmailVerify = async (id, email, msg, linkRoute) => {
   try {
     let token = await Token.findOne({ userId: id });
     if (!token) {
@@ -34,8 +34,8 @@ exports.EmailVerify = async (id, email) => {
         token: crypto.randomBytes(32).toString("hex"),
       }).save();
     }
-    const link = `${process.env.BASE_URL}/verify/${id}/${token.token}`;
-    await this.SendEmail(email, "Email Verification", link);
+    const link = `${process.env.BASE_URL}/${linkRoute}/${id}/${token.token}`;
+    await this.SendEmail(email, msg, link);
   } catch (err) {
     throw err;
   }

@@ -21,7 +21,7 @@ require("./config/passport")(passport);
 
 app.use(createAdmin);
 
-app.use("/product", passport.authenticate("jwt", { session: false }), [
+app.use("/admin", passport.authenticate("jwt", { session: false }), [
   Admin.UserRoutes,
 ]);
 app.use("/customer", passport.authenticate("jwt", { session: false }), [

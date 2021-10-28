@@ -37,7 +37,7 @@ const ProductSchema = mongoose.Schema({
     },
   },
   section: {
-    type: [],
+    type: String,
     required: true,
   },
   date: {

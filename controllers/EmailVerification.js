@@ -8,7 +8,12 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ msg: "Email not found" });
       }
-      await Email.EmailVerify(user._id, user.email);
+      await Email.EmailVerify(
+        user._id,
+        user.email,
+        "Email Verification link",
+        "verify"
+      );
       return res.status(200).json({
         msg: "Verification link sent to your registered mail account",
       });

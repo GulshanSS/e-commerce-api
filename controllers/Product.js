@@ -36,16 +36,22 @@ module.exports = {
   productGetOne: async (req, res) => {
     try {
       const product = await Product.findById({ _id: req.params.id });
+      if (!product) {
+        return res.status(404).json({ msg: "Product not found" });
+      }
       return res.status(201).json(product);
     } catch (err) {
-      return res.status(404).json({ msg: "Product not found" });
+      return res.status(404).json({ msg: "Error while fetching product" });
     }
   },
 
   productUpdate: async (req, res) => {
     let imageDetails = {};
     try {
-      const product = await Product.findById(req.params.id);
+      const product = await Product.findOne({
+        _id: req.params.id,
+        vendor: req.user._id,
+      });
       if (typeof req.body.image != "undefined") {
         // Image Upload
         imageDetails = await Cloudinary.CloudinaryUpload(
@@ -78,7 +84,10 @@ module.exports = {
 
   productDelete: async (req, res) => {
     try {
-      const product = await Product.findById(req.params.id);
+      const product = await Product.findOne({
+        _id: req.params.id,
+        vendor: req.user._id,
+      });
       await Cloudinary.DeleteImage(product.img.cloudinary_ID);
       await product.remove({ _id: product.id });
       return res.status(200).json({ msg: "Product deleted" });
@@ -90,6 +99,9 @@ module.exports = {
   productGetAll: async (req, res) => {
     try {
       const products = await Product.find({});
+      if (!products) {
+        return res.status(404).json({ msg: "No product found" });
+      }
       return res.status(200).json(products);
     } catch (err) {
       return res.status(404).json({ msg: "Error while fetching all products" });

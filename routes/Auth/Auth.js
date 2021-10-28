@@ -3,7 +3,7 @@ const Auth = express.Router();
 
 const {
   AuthController,
-  PasswordResetController,
+  ForgotPasswordController,
   EmailVerificationController,
 } = require("../../controllers");
 
@@ -15,11 +15,11 @@ const {
 
 Auth.post("/register", validateRegisterInput, AuthController.Register);
 Auth.post("/login", validateLoginInput, AuthController.Login);
-Auth.post("/password-reset", PasswordResetController.sendLink);
+Auth.post("/forgot-password", ForgotPasswordController.sendLink);
 Auth.post(
-  "/password-reset/:id/:token",
+  "/forgot-password/:id/:token",
   validatePassword,
-  PasswordResetController.resetPass
+  ForgotPasswordController.forgotPass
 );
 Auth.post("/verify/:id/:token", EmailVerificationController.verifyEmail);
 module.exports = Auth;

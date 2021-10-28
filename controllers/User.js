@@ -41,9 +41,11 @@ module.exports = {
       });
       if (user) {
         await Product.deleteMany({ vendor: req.params.id });
-        await user.Remove();
+        await user.remove();
+      } else {
+        return res.status(200).json({ msg: "Check with the vendor" });
       }
-      return res.status(200).json({ msg: "User deleted Successfully" });
+      return res.status(200).json({ msg: "Vendor deleted Successfully" });
     } catch (err) {
       return res.status(404).json({ msg: "Error while deleting vendor" });
     }

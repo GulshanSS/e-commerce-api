@@ -27,13 +27,14 @@ module.exports = {
   },
   Login: async (req, res) => {
     try {
-      const email = req.body.email;
-      const password = req.body.password;
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email: req.body.email });
       if (!user) {
         return res.status(400).json({ msg: "Email not found" });
       }
-      const isMatch = await Bcrypt.comparePass(password, user.password);
+      const isMatch = await Bcrypt.comparePass(
+        req.body.password,
+        user.password
+      );
       if (isMatch) {
         const payload = {
           id: user.id,

@@ -11,7 +11,12 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ mag: "Email not found" });
       }
-      await Email.EmailVerify(user._id, user.email);
+      await Email.EmailVerify(
+        user._id,
+        user.email,
+        "Password reset link",
+        "forgot-password"
+      );
       return res
         .status(200)
         .json({ msg: "Reset link sent to your registered mail account" });
@@ -19,7 +24,7 @@ module.exports = {
       return res.status(400).json({ msg: "Error sending mail" });
     }
   },
-  resetPass: async (req, res) => {
+  forgotPass: async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
       if (!user)
@@ -32,7 +37,7 @@ module.exports = {
       if (!token)
         return res.status(400).json({ msg: "Invalid link or Expired" });
 
-      user.password = Bcrypt.genHash(req.body.password, 10);
+      user.password = await Bcrypt.genHash(req.body.password, 10);
       await user.save();
       await token.delete();
 

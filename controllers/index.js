@@ -2,6 +2,6 @@ module.exports = {
   ProductController: require("./Product"),
   AuthController: require("./Auth"),
   UserController: require("./User"),
-  PasswordResetController: require("./PasswordReset"),
+  ForgotPasswordController: require("./ForgotPassword"),
   EmailVerificationController: require("./EmailVerification"),
 };
