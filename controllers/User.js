@@ -19,7 +19,7 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ msg: "User Not Found" });
       }
-      return res.status(200).json(users);
+      return res.status(200).json(user);
     } catch (err) {
       return res.status(404).json({ msg: "No such user with that id" });
     }

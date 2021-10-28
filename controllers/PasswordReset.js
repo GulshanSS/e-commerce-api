@@ -2,7 +2,7 @@ const crypto = require("crypto");
 
 const { Bcrypt } = require("../utils");
 const { User, Token } = require("../models");
-const { SendEmail } = require("../utils");
+const { Email } = require("../utils");
 
 module.exports = {
   sendLink: async (req, res) => {
@@ -11,16 +11,7 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ mag: "Email not found" });
       }
-      let token = await Token.findOne({ userId: user._id });
-      if (!token) {
-        token = await new Token({
-          userId: user._id,
-          token: crypto.randomBytes(32).toString("hex"),
-        }).save();
-      }
-      const link = `${process.env.BASE_URL}/password-reset/${user._id}/${token.token}`;
-      await SendEmail(user.email, "Password reset", link);
-
+      await Email.EmailVerify(user._id, user.email);
       return res
         .status(200)
         .json({ msg: "Reset link sent to your registered mail account" });
