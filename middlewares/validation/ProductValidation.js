@@ -2,6 +2,7 @@ const Validator = require("validator");
 const isEmpty = require("is-empty");
 
 const { Product } = require("../../models");
+const { Validation } = require("../../utils");
 
 module.exports = {
   validateProduct: (req, res, next) => {
@@ -45,6 +46,15 @@ module.exports = {
       return res.status(404).json({ msg: "Product Not Found" });
     } else {
       next();
+    }
+  },
+  searchValidation: async (req, res, next) => {
+    req.body.search = Validation.sanitizeAndValidate(req.body.search);
+    if (req.body.search === "") {
+      products = await Product.find({});
+      return res
+        .status(200)
+        .json({ msg: "Please enter a keyword to search", products });
     }
   },
 };

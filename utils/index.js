@@ -1,6 +1,6 @@
 module.exports = {
   Cloudinary: require("./Cloudinary"),
-  SendEmail: require("./SendEmail"),
+  Email: require("./Email"),
   Bcrypt: require("./Bcrypt"),
   Validation: require("./Validation"),
 };

@@ -1,7 +1,5 @@
 const isEmpty = require("is-empty");
-
-const { Product, User } = require("../models");
-const cloudinary = require("cloudinary").v2;
+const { Product } = require("../models");
 const { Cloudinary } = require("../utils");
 
 module.exports = {
@@ -81,7 +79,7 @@ module.exports = {
   productDelete: async (req, res) => {
     try {
       const product = await Product.findById(req.params.id);
-      await cloudinary.uploader.destroy(product.img.cloudinary_ID);
+      await Cloudinary.DeleteImage(product.img.cloudinary_ID);
       await product.remove({ _id: product.id });
       return res.status(200).json({ msg: "Product deleted" });
     } catch (err) {
@@ -93,6 +91,26 @@ module.exports = {
     try {
       const products = await Product.find({});
       return res.status(200).json(products);
+    } catch (err) {
+      return res.status(404).json({ msg: "Error while fetching all products" });
+    }
+  },
+
+  productSearch: async (req, res) => {
+    try {
+      let products = [];
+      let key = new RegExp(".*" + req.body.search + ".*");
+      products = await Product.find({
+        $or: [{ name: key }, { section: key }],
+      });
+      if (isEmpty(products)) {
+        products = await Product.find({});
+        return res.status(200).json({
+          msg: "We do not find any product related to your search keyword.",
+          products,
+        });
+      }
+      return res.status(200).json({ products });
     } catch (err) {
       return res.status(404).json({ msg: "Error while fetching all products" });
     }

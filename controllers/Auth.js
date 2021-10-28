@@ -1,12 +1,13 @@
 const { Bcrypt } = require("../utils");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
+const { Email } = require("../utils");
 
 module.exports = {
   Register: async (req, res) => {
     try {
       const hash = await Bcrypt.genHash(req.body.password);
-      const user = new User({
+      const user = await new User({
         name: req.body.name,
         email: req.body.email,
         dob: Date.now(),
@@ -14,9 +15,13 @@ module.exports = {
         password: hash,
         address: req.body.address,
         gender: req.body.gender,
+        role: req.body.role,
+      }).save();
+      console.log(user);
+      await Email.EmailVerify(user._id, user.email);
+      return res.status(201).json({
+        msg: "Registered successfully and verification link sent to your registered mail account",
       });
-      await user.save();
-      return res.status(201).json({ msg: "Registered Successfully...!" });
     } catch (err) {
       console.log(err);
       return res.status(404).json({ msg: "Cannot register the user..!" });

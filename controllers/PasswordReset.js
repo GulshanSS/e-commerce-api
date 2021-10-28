@@ -11,9 +11,6 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ mag: "Email not found" });
       }
-      if (!user.active) {
-        return res.status(400).json({ msg: "Please Verify your email first" });
-      }
       let token = await Token.findOne({ userId: user._id });
       if (!token) {
         token = await new Token({
