@@ -17,13 +17,11 @@ module.exports = {
         gender: req.body.gender,
         role: req.body.role,
       }).save();
-      console.log(user);
       await Email.EmailVerify(user._id, user.email);
       return res.status(201).json({
         msg: "Registered successfully and verification link sent to your registered mail account",
       });
     } catch (err) {
-      console.log(err);
       return res.status(404).json({ msg: "Cannot register the user..!" });
     }
   },

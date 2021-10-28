@@ -9,7 +9,7 @@ exports.SendEmail = async (email, subject, text) => {
       port: 587,
       secure: true,
       auth: {
-        user: process.env.USER,
+        user: process.env.USERNAME,
         pass: process.env.PASS,
       },
     });
@@ -21,7 +21,7 @@ exports.SendEmail = async (email, subject, text) => {
       text: text,
     });
   } catch (err) {
-    return res.status(400).json({ msg: "Error sending email" });
+    throw err;
   }
 };
 

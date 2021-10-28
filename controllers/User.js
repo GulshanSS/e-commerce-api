@@ -172,7 +172,6 @@ module.exports = {
       await product.save();
       return res.status(201).json(product);
     } catch (err) {
-      console.log(err);
       return res.status(400).json({ msg: "Error while liking the product" });
     }
   },
