@@ -32,6 +32,9 @@ app.use("/vendor", passport.authenticate("jwt", { session: false }), [
   Vendor.UserRoutes,
 ]);
 
-app.use("/", [AuthRoutes, Public.ProductRoutes]);
+app.use("/api", [AuthRoutes, Public.ProductRoutes]);
+app.use("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
 
 app.listen(process.env.PORT || 3000);
