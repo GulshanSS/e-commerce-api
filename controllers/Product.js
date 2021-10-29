@@ -29,7 +29,7 @@ module.exports = {
       return res.status(201).json({ msg: "Product Saved" });
     } catch (err) {
       await Cloudinary.DeleteImage(imageDetails.cloudinary_ID);
-      return res.status(404).json({ msg: "Error saving product details" });
+      return res.status(409).json({ msg: "Error saving product details" });
     }
   },
 
@@ -41,7 +41,7 @@ module.exports = {
       }
       return res.status(201).json(product);
     } catch (err) {
-      return res.status(404).json({ msg: "Error while fetching product" });
+      return res.status(409).json({ msg: "Error while fetching product" });
     }
   },
 
@@ -52,8 +52,10 @@ module.exports = {
         _id: req.params.id,
         vendor: req.user._id,
       });
+      if (!product) {
+        return res.status(404).json({ msg: "Product not found" });
+      }
       if (typeof req.body.image != "undefined") {
-        // Image Upload
         imageDetails = await Cloudinary.CloudinaryUpload(
           req.body.image,
           req.body.section || product.section,
@@ -75,10 +77,10 @@ module.exports = {
           },
         }
       );
-      return res.status(200).json({ msg: "Product Updated" });
+      return res.status(202).json({ msg: "Product Updated" });
     } catch (err) {
       await Cloudinary.DeleteImage(imageDetails.cloudinary_ID); // Delete image
-      return res.status(404).json({ msg: "Cannot Update Data" });
+      return res.status(409).json({ msg: "Cannot Update Data" });
     }
   },
 
@@ -88,11 +90,14 @@ module.exports = {
         _id: req.params.id,
         vendor: req.user._id,
       });
+      if (!product) {
+        return res.status(404).json({ msg: "Product not found" });
+      }
       await Cloudinary.DeleteImage(product.img.cloudinary_ID);
       await product.remove({ _id: product.id });
       return res.status(200).json({ msg: "Product deleted" });
     } catch (err) {
-      return res.status(404).json({ msg: "Error deleting product" });
+      return res.status(409).json({ msg: "Error deleting product" });
     }
   },
 
@@ -104,7 +109,7 @@ module.exports = {
       }
       return res.status(200).json(products);
     } catch (err) {
-      return res.status(404).json({ msg: "Error while fetching all products" });
+      return res.status(409).json({ msg: "Error while fetching all products" });
     }
   },
 
@@ -117,14 +122,14 @@ module.exports = {
       });
       if (isEmpty(products)) {
         products = await Product.find({});
-        return res.status(200).json({
+        return res.status(204).json({
           msg: "We do not find any product related to your search keyword.",
           products,
         });
       }
       return res.status(200).json({ products });
     } catch (err) {
-      return res.status(404).json({ msg: "Error while fetching all products" });
+      return res.status(409).json({ msg: "Error while fetching all products" });
     }
   },
 };

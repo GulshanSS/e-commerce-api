@@ -22,14 +22,14 @@ module.exports = {
         msg: "Registered successfully and verification link sent to your registered mail account",
       });
     } catch (err) {
-      return res.status(404).json({ msg: "Cannot register the user..!" });
+      return res.status(406).json({ msg: "Cannot register the user..!" });
     }
   },
   Login: async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        return res.status(400).json({ msg: "Email not found" });
+        return res.status(404).json({ msg: "Email not found" });
       }
       const isMatch = await Bcrypt.comparePass(
         req.body.password,
@@ -43,12 +43,12 @@ module.exports = {
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: 31556926,
         });
-        return res.status(200).json({
+        return res.status(202).json({
           success: true,
           token: `Bearer ${token}`,
         });
       } else {
-        return res.status(400).json({ msg: "Password Incorrect" });
+        return res.status(406).json({ msg: "Password Incorrect" });
       }
     } catch (err) {
       return res.status(404).json({ msg: "User not found" });

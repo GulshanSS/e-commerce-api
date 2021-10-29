@@ -18,7 +18,7 @@ exports.grantAccess = (action, resource) => {
 
 exports.verifiedEmail = (req, res, next) => {
   if (!req.user.active) {
-    return res.status(400).json({ msg: "Please Verify your email first" });
+    return res.status(401).json({ msg: "Please Verify your email first" });
   }
   next();
 };

@@ -38,7 +38,7 @@ module.exports = {
     } else if (typeof req.body.section != "undefined") {
       req.body.section = Validator.trim(Validator.escape(req.body.section));
     }
-    return isEmpty(errors) ? next() : res.status(404).json(errors);
+    return isEmpty(errors) ? next() : res.status(406).json(errors);
   },
   productCheck: async (req, res, next) => {
     const product = await Product.findById(req.params.id);

@@ -34,6 +34,4 @@ app.use("/vendor", passport.authenticate("jwt", { session: false }), [
 
 app.use("/", [AuthRoutes, Public.ProductRoutes]);
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Server Started at ${process.env.PORT}`);
-});
+app.listen(process.env.PORT || 3000);

@@ -6,27 +6,30 @@ module.exports = {
     try {
       const users = await User.find({});
       if (!users) {
-        return res.status(400).json({ msg: "No Users Found" });
+        return res.status(404).json({ msg: "No Users Found" });
       }
       return res.status(200).json(users);
     } catch (err) {
-      return res.status(404).json({ msg: "Error while fetching all users" });
+      return res.status(409).json({ msg: "Error while fetching all users" });
     }
   },
   userGetOne: async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        return res.status(400).json({ msg: "User Not Found" });
+        return res.status(404).json({ msg: "User Not Found" });
       }
       return res.status(200).json(user);
     } catch (err) {
-      return res.status(404).json({ msg: "No such user with that id" });
+      return res.status(409).json({ msg: "No such user with that id" });
     }
   },
   userDetails: async (req, res) => {
     try {
       const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(401).json({ msg: "Please Login to see the details" });
+      }
       return res.status(200).json(user);
     } catch (err) {
       return res.status(404).json({ msg: "Error Fetching Details" });
@@ -39,15 +42,14 @@ module.exports = {
         deleteApproval: true,
         role: "vendor",
       });
-      if (user) {
-        await Product.deleteMany({ vendor: req.params.id });
-        await user.remove();
-      } else {
-        return res.status(200).json({ msg: "Check with the vendor" });
+      if (!user) {
+        return res.status(404).json({ msg: "Check with the vendor" });
       }
+      await Product.deleteMany({ vendor: req.params.id });
+      await user.remove();
       return res.status(200).json({ msg: "Vendor deleted Successfully" });
     } catch (err) {
-      return res.status(404).json({ msg: "Error while deleting vendor" });
+      return res.status(409).json({ msg: "Error while deleting vendor" });
     }
   },
   userCart: (req, res) => {
@@ -58,7 +60,7 @@ module.exports = {
       });
       return res.status(200).json(cart);
     } catch (err) {
-      return res.status(404).json({ msg: "No Products added to cart" });
+      return res.status(409).json({ msg: "No Products added to cart" });
     }
   },
   userAddToCart: async (req, res) => {
@@ -81,9 +83,9 @@ module.exports = {
           cart: user.cart,
         },
       });
-      return res.status(202).json({ msg: "Product added to cart" });
+      return res.status(201).json({ msg: "Product added to cart" });
     } catch (err) {
-      return res.status(404).json({ msg: "Failed to add to cart" });
+      return res.status(409).json({ msg: "Failed to add to cart" });
     }
   },
   userOrder: async (req, res) => {
@@ -115,7 +117,7 @@ module.exports = {
         },
       });
     } catch (err) {
-      return res.status(404).json({ msg: "Unable to buy this product" });
+      return res.status(409).json({ msg: "Unable to buy this product" });
     }
   },
   resetPassword: async (req, res) => {
@@ -140,14 +142,14 @@ module.exports = {
           }
         );
         req.user = user;
-        return res.status(200).json({ msg: "Password reset sucessful!" });
+        return res.status(202).json({ msg: "Password reset sucessful!" });
       } else {
-        return res.status(404).json({ msg: "Invalid old password" });
+        return res.status(406).json({ msg: "Old password is not correct" });
       }
     } catch (err) {
       return res
-        .status(400)
-        .json({ msg: "Couldn't reset the password, try again" });
+        .status(409)
+        .json({ msg: "Unable to reset the password, try again" });
     }
   },
   likeProduct: async (req, res) => {
@@ -155,7 +157,7 @@ module.exports = {
       let updatedUsers = [];
       const product = await Product.findById(req.params.id);
       if (!product) {
-        return res.status(400).json({ msg: "Product Not Found" });
+        return res.status(404).json({ msg: "Product Not Found" });
       }
       if (
         product.likes.users.find(
@@ -172,37 +174,37 @@ module.exports = {
       }
       product.likes.users = updatedUsers;
       await product.save();
-      return res.status(201).json(product);
+      return res.status(202).json(product);
     } catch (err) {
-      return res.status(400).json({ msg: "Error while liking the product" });
+      return res.status(409).json({ msg: "Error while liking the product" });
     }
   },
   deleteApproval: async (req, res) => {
     try {
       const user = await User.findOne({ _id: req.user._id, role: "vendor" });
       if (!user) {
-        return res.status(400).json({ msg: "User Not Found" });
+        return res.status(404).json({ msg: "Vendor not found" });
       }
       user.deleteApproval = true;
       await user.save();
       return res.status(201).json({ msg: "Submitted for Delete Approval" });
     } catch (err) {
-      return res.status(400).json({ msg: "Error sending Delete Approval" });
+      return res.status(409).json({ msg: "Error sending Delete Approval" });
     }
   },
   cancelDeleteApproval: async (req, res) => {
     try {
       const user = await User.findOne({ _id: req.params.id, role: "vendor" });
       if (!user) {
-        return res.status(400).json({ msg: "Vendor Not Found" });
+        return res.status(404).json({ msg: "Vendor not found" });
       }
       user.deleteApproval = false;
       await user.save();
       return res
-        .status(201)
+        .status(202)
         .json({ msg: `Delete Approval Cancel for ${user.name}` });
     } catch (err) {
-      return res.status(400).json({ msg: "Error canceling Delete Approval" });
+      return res.status(409).json({ msg: "Error canceling Delete Approval" });
     }
   },
 };
