@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const app = express();
 
+const cors = require("cors");
 const config = require("./config");
 const { createAdmin } = require("./middlewares/auth");
 const Admin = require("./routes/Admin");
@@ -15,19 +16,24 @@ require("dotenv").config();
 config.DBConfig();
 config.CloudinaryConfig();
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use(passport.initialize());
 require("./config/passport")(passport);
 
 app.use(createAdmin);
 
-app.use("/admin", passport.authenticate("jwt", { session: false }), [
+app.use("/api/admin", passport.authenticate("jwt", { session: false }), [
   Admin.UserRoutes,
 ]);
-app.use("/customer", passport.authenticate("jwt", { session: false }), [
+app.use("/api/customer", passport.authenticate("jwt", { session: false }), [
   Customer.UserRoutes,
 ]);
-app.use("/vendor", passport.authenticate("jwt", { session: false }), [
+app.use("/api/vendor", passport.authenticate("jwt", { session: false }), [
   Vendor.ProductRoutes,
   Vendor.UserRoutes,
 ]);
