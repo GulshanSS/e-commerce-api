@@ -39,7 +39,7 @@ app.use("/api/vendor", passport.authenticate("jwt", { session: false }), [
 ]);
 
 app.use("/api", [AuthRoutes, Public.ProductRoutes]);
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
