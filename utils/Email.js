@@ -7,10 +7,10 @@ exports.SendEmail = async (email, subject, text) => {
     const transporter = nodemailer.createTransport({
       service: process.env.SERVICE,
       port: 587,
-      secure: true,
+      secure: false,
       auth: {
-        user: process.env.USERNAME,
-        pass: process.env.PASS,
+        user: process.env.EMAILUSER,
+        pass: process.env.EMAILPASS,
       },
     });
 

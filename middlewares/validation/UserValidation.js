@@ -13,7 +13,7 @@ module.exports = {
     req.body.password = Validation.sanitizeAndValidate(req.body.password);
     req.body.address = Validation.sanitizeAndValidate(req.body.address);
     req.body.gender = Validation.sanitizeAndValidate(req.body.gender);
-    
+
     //Name checks
     if (Validator.isEmpty(req.body.name)) {
       errors.name = "Name is required";
@@ -34,10 +34,10 @@ module.exports = {
       errors.password = "Password is required";
     } else if (!Validator.isStrongPassword(req.body.password)) {
       errors.password =
-        "Password must 8 characters long and" +
-        "Must contain 1 atleast lowercase character and" +
-        "Must contain 1 atleast uppercase character and" +
-        "Must contain 1 atleast number and" +
+        "Password must 8 characters long -" +
+        "Must contain 1 atleast lowercase character -" +
+        "Must contain 1 atleast uppercase character -" +
+        "Must contain 1 atleast number -" +
         "Must contain 1 atleast special symbol character";
     }
 
@@ -56,9 +56,9 @@ module.exports = {
     }
 
     //Date Check
-    //   if(Date.now() < req.body.dob || Validator.isDate(req.body.dob,['/','-']){
-    //       errors.dob = "Please enter valid Date of birth"
-    //   }
+    if (new Date().getTime() < req.body.dob) {
+      errors.dob = "Please enter valid Date of birth";
+    }
     return isEmpty(errors) ? next() : res.status(404).json(errors);
   },
   validateLoginInput: (req, res, next) => {
@@ -105,10 +105,10 @@ module.exports = {
       errors.password = "New password field can not be empty";
     } else if (!Validator.isStrongPassword(req.body.password)) {
       errors.password =
-        "Password must 8 characters long and" +
-        "Must contain 1 atleast lowercase character and" +
-        "Must contain 1 atleast uppercase character and" +
-        "Must contain 1 atleast number and" +
+        "Password must 8 characters long \n" +
+        "Must contain 1 atleast lowercase character \n" +
+        "Must contain 1 atleast uppercase character \n" +
+        "Must contain 1 atleast number \n" +
         "Must contain 1 atleast special symbol character";
     }
     return isEmpty(errors) ? next() : res.status(404).json(errors);

@@ -10,14 +10,14 @@ module.exports = {
       const user = await new User({
         name: req.body.name,
         email: req.body.email,
-        dob: Date.now(),
+        dob: req.body.now,
         mobile_no: req.body.mobile,
         password: hash,
         address: req.body.address,
         gender: req.body.gender,
         role: req.body.role,
       }).save();
-      //await Email.EmailVerify(user._id, user.email);
+      await Email.EmailVerify(user._id, user.email, "Email Verification", "verify");
       return res.status(201).json({
         msg: "Registered successfully and verification link sent to your registered mail account",
       });
