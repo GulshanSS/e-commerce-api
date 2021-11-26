@@ -30,7 +30,7 @@ module.exports = {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        return res.status(404).json({ msg: "Email not found" });
+        return res.status(404).json({ email: "Email not found" });
       }
       const isMatch = await Bcrypt.comparePass(
         req.body.password,
@@ -49,7 +49,7 @@ module.exports = {
           token: `Bearer ${token}`,
         });
       } else {
-        return res.status(406).json({ msg: "Password Incorrect" });
+        return res.status(406).json({ password: "Password Incorrect" });
       }
     } catch (err) {
       return res.status(404).json({ msg: "User not found" });
