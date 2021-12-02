@@ -5,6 +5,12 @@ const { ProductController } = require("../../controllers");
 const { validateProduct } = require("../../middlewares/validation");
 const { grantAccess } = require("../../middlewares/auth");
 
+Product.get(
+  "/products",
+  grantAccess("updateOwn", "product"),
+  ProductController.productGetByVendor
+);
+
 Product.post(
   "/add",
   validateProduct,

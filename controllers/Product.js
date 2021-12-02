@@ -113,6 +113,18 @@ module.exports = {
     }
   },
 
+  productGetByVendor: async (req, res) => {
+    try {
+      const products = await Product.find({ vendor: req.user._id });
+      if (!products) {
+        return res.status(404).json({ msg: "No product found" });
+      }
+      return res.status(200).json(products);
+    } catch (err) {
+      return res.status(409).json({ msg: "Error while fetching all products" });
+    }
+  },
+
   productSearch: async (req, res) => {
     try {
       let products = [];
