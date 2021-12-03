@@ -93,7 +93,7 @@ module.exports = {
     if (Validator.isEmpty(req.body.confirmpassword)) {
       errors.confirmpassword = "Confirm field can not be empty";
     } else if (req.body.newpassword != req.body.confirmpassword) {
-      errors.comapre = "Password and it's confirmation doesn't match";
+      errors.confirmpassword = "Password and it's confirmation doesn't match";
     }
     return isEmpty(errors) ? next() : res.status(404).json(errors);
   },

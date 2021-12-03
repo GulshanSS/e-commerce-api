@@ -135,7 +135,7 @@ module.exports = {
         if (req.body.oldpassword === req.body.newpassword) {
           return res
             .status(400)
-            .json({ msg: "You can't set same password again" });
+            .json({ newpassword: "You can't set same password again" });
         }
         hash = await bcrypt.hash(req.body.newpassword, 10);
         const user = await User.findByIdAndUpdate(
@@ -149,7 +149,7 @@ module.exports = {
         req.user = user;
         return res.status(202).json({ msg: "Password reset sucessful!" });
       } else {
-        return res.status(406).json({ msg: "Old password is not correct" });
+        return res.status(406).json({ oldpassword: "Old password is not correct" });
       }
     } catch (err) {
       return res
