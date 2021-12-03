@@ -52,13 +52,10 @@ module.exports = {
       return res.status(409).json({ msg: "Error while deleting vendor" });
     }
   },
-  userCart: (req, res) => {
+  userCart: async (req, res) => {
     try {
-      let cart = [];
-      req.user.cart.forEach(async (ele, i) => {
-        cart.push(await Product.findById(ele));
-      });
-      return res.status(200).json(cart);
+      const user = await User.findById(req.user._id).populate("cart");
+      return res.status(200).json(user.cart);
     } catch (err) {
       return res.status(409).json({ msg: "No Products added to cart" });
     }
