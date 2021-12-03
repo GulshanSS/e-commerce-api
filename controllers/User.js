@@ -85,6 +85,14 @@ module.exports = {
       return res.status(409).json({ msg: "Failed to add to cart" });
     }
   },
+  userMyOrder: async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id).populate("order");
+      return res.status(200).json(user.order);
+    } catch (err) {
+      return res.status(409).json({ msg: "No Products Bought" });
+    }
+  },
   userOrder: async (req, res) => {
     try {
       const user = await User.findById(req.user._id);

@@ -19,6 +19,12 @@ User.get(
 
 User.get("/cart", grantAccess("readOwn", "product"), UserController.userCart);
 
+User.get(
+  "/myOrders",
+  grantAccess("readOwn", "product"),
+  UserController.userMyOrder
+);
+
 User.post(
   "/:id/addToCart",
   grantAccess("readAny", "product"),
