@@ -21,5 +21,5 @@ Auth.post(
   validatePassword,
   ForgotPasswordController.forgotPass
 );
-Auth.post("/verify/:id/:token", EmailVerificationController.verifyEmail);
+Auth.get("/verify/:id/:token", EmailVerificationController.verifyEmail);
 module.exports = Auth;

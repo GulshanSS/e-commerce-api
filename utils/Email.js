@@ -18,7 +18,14 @@ exports.SendEmail = async (email, subject, text) => {
       from: process.env.USER,
       to: email,
       subject: subject,
-      text: text,
+      html:
+        "<form " +
+        "method='get'" +
+        `action="http://localhost:3000/emailVerify/${text}">` +
+        "<button type='submit' style='background:#00FF00;width:100px;height:50px;color:white;font-weight:500;font-size:20px;border-radius:8px;border:none;'>" +
+        "Verify" +
+        "</button>" +
+        "</form>",
     });
   } catch (err) {
     throw err;
@@ -34,7 +41,7 @@ exports.EmailVerify = async (id, email, msg, linkRoute) => {
         token: crypto.randomBytes(32).toString("hex"),
       }).save();
     }
-    const link = `${process.env.BASE_URL}/${linkRoute}/${id}/${token.token}`;
+    const link = `${id}/${token.token}`;
     await this.SendEmail(email, msg, link);
   } catch (err) {
     throw err;
