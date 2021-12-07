@@ -43,7 +43,7 @@ User.post(
 
 User.post(
   "/resetpassword",
-  grantAccess("readOwn", "profile"),
+  grantAccess("updateOwn", "profile"),
   verifiedEmail,
   validateResetPassword,
   UserController.resetPassword
