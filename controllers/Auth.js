@@ -17,7 +17,7 @@ module.exports = {
         gender: req.body.gender,
         role: req.body.role,
       }).save();
-      await Email.EmailVerify(user._id, user.email, "Email Verification", "verify");
+      await Email.EmailVerify(user._id, user.email, "Email Verification", "emailVerify", "Verify");
       return res.status(201).json({
         msg: "Registered successfully and verification link sent to your registered mail account",
       });

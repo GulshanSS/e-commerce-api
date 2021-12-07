@@ -15,7 +15,8 @@ module.exports = {
         user._id,
         user.email,
         "Password reset link",
-        "forgot-password"
+        "forgotPassword",
+        "Reset Password"
       );
       return res
         .status(200)

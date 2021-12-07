@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const { Token } = require("../models");
 const crypto = require("crypto");
 
-exports.SendEmail = async (email, subject, text) => {
+exports.SendEmail = async (email, subject, data, btnText) => {
   try {
     const transporter = nodemailer.createTransport({
       service: process.env.SERVICE,
@@ -21,9 +21,9 @@ exports.SendEmail = async (email, subject, text) => {
       html:
         "<form " +
         "method='get'" +
-        `action="http://localhost:3000/emailVerify/${text}">` +
-        "<button type='submit' style='background:#00FF00;width:100px;height:50px;color:white;font-weight:500;font-size:20px;border-radius:8px;border:none;'>" +
-        "Verify" +
+        `action="http://localhost:3000/${data}">` +
+        "<button type='submit' style='background:#00FF00;width:150px;height:50px;color:white;font-weight:500;font-size:20px;border-radius:8px;border:none;'>" +
+        `${btnText}` +
         "</button>" +
         "</form>",
     });
@@ -32,7 +32,7 @@ exports.SendEmail = async (email, subject, text) => {
   }
 };
 
-exports.EmailVerify = async (id, email, msg, linkRoute) => {
+exports.EmailVerify = async (id, email, msg, linkroute, btnText) => {
   try {
     let token = await Token.findOne({ userId: id });
     if (!token) {
@@ -41,8 +41,8 @@ exports.EmailVerify = async (id, email, msg, linkRoute) => {
         token: crypto.randomBytes(32).toString("hex"),
       }).save();
     }
-    const link = `${id}/${token.token}`;
-    await this.SendEmail(email, msg, link);
+    const link = `${linkroute}/${id}/${token.token}`;
+    await this.SendEmail(email, msg, link, btnText);
   } catch (err) {
     throw err;
   }
