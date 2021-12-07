@@ -32,7 +32,7 @@ exports.SendEmail = async (email, subject, data, btnText) => {
   }
 };
 
-exports.EmailVerify = async (id, email, msg, linkroute, btnText) => {
+exports.generateVerificationLink = async (id, email, msg, linkroute, btnText) => {
   try {
     let token = await Token.findOne({ userId: id });
     if (!token) {

@@ -59,7 +59,7 @@ User.post(
 User.post(
   "/verify",
   grantAccess("readOwn", "profile"),
-  EmailVerificationController.emailVerificationLink
+  EmailVerificationController.sendEmailVerificationLink
 );
 
 module.exports = User;

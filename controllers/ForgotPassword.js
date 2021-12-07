@@ -11,7 +11,7 @@ module.exports = {
       if (!user) {
         return res.status(404).json({ mag: "Email not found" });
       }
-      await Email.EmailVerify(
+      await Email.generateVerificationLink(
         user._id,
         user.email,
         "Password reset link",

@@ -2,17 +2,18 @@ const { User, Token } = require("../models");
 const { Email } = require("../utils");
 
 module.exports = {
-  emailVerificationLink: async (req, res) => {
+  sendEmailVerificationLink: async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
         return res.status(404).json({ msg: "Email not found" });
       }
-      await Email.EmailVerify(
+      await Email.generateVerificationLink(
         user._id,
         user.email,
         "Email Verification link",
-        "verify"
+        "emailVerify",
+        "Verify"
       );
       return res.status(200).json({
         msg: "Verification link sent to your registered mail account",
