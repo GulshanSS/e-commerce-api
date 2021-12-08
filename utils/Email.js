@@ -21,7 +21,7 @@ exports.SendEmail = async (email, subject, data, btnText) => {
       html:
         "<form " +
         "method='get'" +
-        `action="http://localhost:3000/${data}">` +
+        `action="https://e-commerce-ui-two.vercel.app/${data}">` +
         "<button type='submit' style='background:#00FF00;width:150px;height:50px;color:white;font-weight:500;font-size:20px;border-radius:8px;border:none;'>" +
         `${btnText}` +
         "</button>" +
