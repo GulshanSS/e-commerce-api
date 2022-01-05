@@ -1,6 +1,7 @@
 const isEmpty = require("is-empty");
 const { Product } = require("../models");
 const { Cloudinary } = require("../utils");
+const ErrorHandler = require("../utils/errorHandler");
 
 module.exports = {
   productAdd: async (req, res) => {
@@ -37,7 +38,7 @@ module.exports = {
     try {
       const product = await Product.findById({ _id: req.params.id });
       if (!product) {
-        return res.status(404).json({ msg: "Product not found" });
+        return next(new ErrorHandler(404, "No Product Found"));
       }
       return res.status(201).json(product);
     } catch (err) {
@@ -53,7 +54,7 @@ module.exports = {
         vendor: req.user._id,
       });
       if (!product) {
-        return res.status(404).json({ msg: "Product not found" });
+        next(new ErrorHandler(404, "No Product Found"));
       }
       if (typeof req.body.image != "undefined") {
         imageDetails = await Cloudinary.CloudinaryUpload(
@@ -101,15 +102,15 @@ module.exports = {
     }
   },
 
-  productGetAll: async (req, res) => {
+  productGetAll: async (req, res, next) => {
     try {
       const products = await Product.find({});
-      if (!products) {
-        return res.status(404).json({ msg: "No product found" });
+      if (products) {
+        return next(new ErrorHandler(404, "No Product Found"));
       }
       return res.status(200).json(products);
     } catch (err) {
-      return res.status(409).json({ msg: "Error while fetching all products" });
+      return next(new ErrorHandler(409, "Error while fetching products"));
     }
   },
 
@@ -117,7 +118,7 @@ module.exports = {
     try {
       const products = await Product.find({ vendor: req.user._id });
       if (!products) {
-        return res.status(404).json({ msg: "No product found" });
+        return next(new ErrorHandler(404, "No Product Found"));
       }
       return res.status(200).json(products);
     } catch (err) {

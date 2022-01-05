@@ -1,12 +1,13 @@
 const { User, Token } = require("../models");
 const { Email } = require("../utils");
+const ErrorHandler = require("../utils/errorHandler");
 
 module.exports = {
   sendEmailVerificationLink: async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        return res.status(404).json({ msg: "Email not found" });
+        next(new ErrorHandler(404, "Email not found"));
       }
       await Email.generateVerificationLink(
         user._id,
@@ -25,15 +26,13 @@ module.exports = {
   verifyEmail: async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-      if (!user)
-        return res.status(404).json({ msg: "User not found" });
+      if (!user) next(new ErrorHandler(404, "User not found"));
 
       const token = await Token.findOne({
         userId: user._id,
         token: req.params.token,
       });
-      if (!token)
-        return res.status(404).json({ msg: "Token not found" });
+      if (!token) next(new ErrorHandler(404, "Token not Found"));
 
       user.active = true;
       await user.save();

@@ -1,12 +1,14 @@
 const { User, Product } = require("../models");
 const bcrypt = require("bcrypt");
+const isEmpty = require("is-empty");
+const ErrorHandler = require("../utils/errorHandler");
 
 module.exports = {
   userGetAll: async (req, res) => {
     try {
       const users = await User.find({});
       if (!users) {
-        return res.status(404).json({ msg: "No Users Found" });
+        next(new ErrorHandler(404, "User not found"));
       }
       return res.status(200).json(users);
     } catch (err) {
@@ -17,7 +19,7 @@ module.exports = {
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        return res.status(404).json({ msg: "User Not Found" });
+        next(new ErrorHandler(404, "User not found"));
       }
       return res.status(200).json(user);
     } catch (err) {
@@ -28,7 +30,7 @@ module.exports = {
     try {
       const user = await User.findById(req.user._id);
       if (!user) {
-        return res.status(401).json({ msg: "Please Login to see the details" });
+        next(new ErrorHandler(401, "Please Login to see the details"));
       }
       return res.status(200).json(user);
     } catch (err) {
@@ -43,7 +45,7 @@ module.exports = {
         role: "vendor",
       });
       if (!user) {
-        return res.status(404).json({ msg: "Check with the vendor" });
+        next(new ErrorHandler(404, "Check with the vendor"));
       }
       await Product.deleteMany({ vendor: req.params.id });
       await user.remove();
@@ -55,6 +57,9 @@ module.exports = {
   userCart: async (req, res) => {
     try {
       const user = await User.findById(req.user._id).populate("cart");
+      if (isEmpty(user.cart)) {
+        next(new ErrorHandler(404, "No Products added to cart"));
+      }
       return res.status(200).json(user.cart);
     } catch (err) {
       return res.status(409).json({ msg: "No Products added to cart" });
@@ -88,6 +93,9 @@ module.exports = {
   userMyOrder: async (req, res) => {
     try {
       const user = await User.findById(req.user._id).populate("order");
+      if (isEmpty(user.order)) {
+        next(new ErrorHandler(404, "No Products Bought"));
+      }
       return res.status(200).json(user.order);
     } catch (err) {
       return res.status(409).json({ msg: "No Products Bought" });
@@ -133,9 +141,7 @@ module.exports = {
       );
       if (isMatch) {
         if (req.body.oldpassword === req.body.newpassword) {
-          return res
-            .status(400)
-            .json({ newpassword: "You can't set same password again" });
+          next(new ErrorHandler(400, "You can't set same password again"));
         }
         hash = await bcrypt.hash(req.body.newpassword, 10);
         const user = await User.findByIdAndUpdate(
@@ -149,7 +155,7 @@ module.exports = {
         req.user = user;
         return res.status(202).json({ msg: "Password reset sucessful!" });
       } else {
-        return res.status(406).json({ oldpassword: "Old password is not correct" });
+        next(new ErrorHandler(406, "Old password is not correct"));
       }
     } catch (err) {
       return res
@@ -162,7 +168,7 @@ module.exports = {
       let updatedUsers = [];
       const product = await Product.findById(req.params.id);
       if (!product) {
-        return res.status(404).json({ msg: "Product Not Found" });
+        next(new ErrorHandler(404, "Product Not Found"));
       }
       if (
         product.likes.users.find(
@@ -188,7 +194,7 @@ module.exports = {
     try {
       const user = await User.findOne({ _id: req.user._id, role: "vendor" });
       if (!user) {
-        return res.status(404).json({ msg: "Vendor not found" });
+        next(new ErrorHandler(404, "Vendor Not Found"));
       }
       user.deleteApproval = true;
       await user.save();
@@ -201,7 +207,7 @@ module.exports = {
     try {
       const user = await User.findOne({ _id: req.params.id, role: "vendor" });
       if (!user) {
-        return res.status(404).json({ msg: "Vendor not found" });
+        next(new ErrorHandler(404, "Vendor Not Found"));
       }
       user.deleteApproval = false;
       await user.save();

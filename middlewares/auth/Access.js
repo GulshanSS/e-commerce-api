@@ -1,4 +1,5 @@
 const { roles } = require("../../config/roles");
+const ErrorHandler = require("../../utils/errorHandler");
 
 exports.grantAccess = (action, resource) => {
   return async (req, res, next) => {
@@ -18,7 +19,7 @@ exports.grantAccess = (action, resource) => {
 
 exports.verifiedEmail = (req, res, next) => {
   if (!req.user.active) {
-    return res.status(401).json({ msg: "Please Verify your email first" });
+    next(new ErrorHandler(401, "Please Verify your email first"));
   }
   next();
 };

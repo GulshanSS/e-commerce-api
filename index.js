@@ -1,8 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const app = express();
-
 const cors = require("cors");
+require("dotenv").config();
 const config = require("./config");
 const { createAdmin } = require("./middlewares/auth");
 const Admin = require("./routes/Admin");
@@ -10,8 +10,7 @@ const Customer = require("./routes/Customer");
 const Vendor = require("./routes/Vendor");
 const Public = require("./routes/Public");
 const { AuthRoutes } = require("./routes/Auth");
-
-require("dotenv").config();
+const errorMiddleware = require("./middlewares/errors");
 
 config.DBConfig();
 config.CloudinaryConfig();
@@ -43,4 +42,10 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-app.listen(process.env.PORT || 3000);
+app.use(errorMiddleware);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, ()=> {
+  console.log(`Server started on PORT: ${PORT} in ${process.env.NODE_ENV} mode.`)
+});

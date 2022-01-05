@@ -3,13 +3,14 @@ const crypto = require("crypto");
 const { Bcrypt } = require("../utils");
 const { User, Token } = require("../models");
 const { Email } = require("../utils");
+const ErrorHandler = require("../utils/errorHandler");
 
 module.exports = {
   sendLink: async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        return res.status(404).json({ mag: "Email not found" });
+        next(new ErrorHandler(404, "Email not found"))
       }
       await Email.generateVerificationLink(
         user._id,
@@ -29,14 +30,14 @@ module.exports = {
     try {
       const user = await User.findById(req.params.id);
       if (!user)
-        return res.status(404).json({ msg: "User not found" });
+        next(new ErrorHandler(404, "User not found"))
 
       const token = await Token.findOne({
         userId: user._id,
         token: req.params.token,
       });
       if (!token)
-        return res.status(404).json({ msg: "Token not found" });
+        next(new ErrorHandler(404, "Token not found"))
 
       user.password = await Bcrypt.genHash(req.body.password, 10);
       await user.save();

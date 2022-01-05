@@ -2,6 +2,7 @@ const { Bcrypt } = require("../utils");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
 const { Email } = require("../utils");
+const ErrorHandler = require("../utils/errorHandler");
 
 module.exports = {
   Register: async (req, res) => {
@@ -17,12 +18,17 @@ module.exports = {
         gender: req.body.gender,
         role: req.body.role,
       }).save();
-      await Email.generateVerificationLink(user._id, user.email, "Email Verification", "emailVerify", "Verify");
+      await Email.generateVerificationLink(
+        user._id,
+        user.email,
+        "Email Verification",
+        "emailVerify",
+        "Verify"
+      );
       return res.status(201).json({
         msg: "Registered successfully and verification link sent to your registered mail account",
       });
     } catch (err) {
-      console.log(err);
       return res.status(406).json({ msg: "Cannot register the user..!" });
     }
   },
@@ -30,7 +36,7 @@ module.exports = {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        return res.status(404).json({ email: "Email not found" });
+        next(new ErrorHandler(404, "Email Not Found"));
       }
       const isMatch = await Bcrypt.comparePass(
         req.body.password,
@@ -49,7 +55,7 @@ module.exports = {
           token: `Bearer ${token}`,
         });
       } else {
-        return res.status(406).json({ password: "Password Incorrect" });
+        next(new ErrorHandler(406, "Password Incorrect"));
       }
     } catch (err) {
       return res.status(404).json({ msg: "User not found" });
