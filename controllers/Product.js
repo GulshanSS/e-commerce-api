@@ -2,6 +2,8 @@ const isEmpty = require("is-empty");
 const { Product } = require("../models");
 const { Cloudinary } = require("../utils");
 const ErrorHandler = require("../utils/errorHandler");
+const asyncHandler = require("../middlewares/asyncHandler");
+
 
 module.exports = {
   productAdd: async (req, res) => {
@@ -34,17 +36,13 @@ module.exports = {
     }
   },
 
-  productGetOne: async (req, res) => {
-    try {
-      const product = await Product.findById({ _id: req.params.id });
-      if (!product) {
-        return next(new ErrorHandler(404, "No Product Found"));
-      }
-      return res.status(201).json(product);
-    } catch (err) {
-      return res.status(409).json({ msg: "Error while fetching product" });
+  productGetOne: asyncHandler(async (req, res) => {
+    const product = await Product.findById({ _id: req.params.id });
+    if (!product) {
+      return next(new ErrorHandler(404, "No Product Found"));
     }
-  },
+    return res.status(201).json(product);
+  }),
 
   productUpdate: async (req, res) => {
     let imageDetails = {};
@@ -85,22 +83,18 @@ module.exports = {
     }
   },
 
-  productDelete: async (req, res) => {
-    try {
-      const product = await Product.findOne({
-        _id: req.params.id,
-        vendor: req.user._id,
-      });
-      if (!product) {
-        return res.status(404).json({ msg: "Product not found" });
-      }
-      await Cloudinary.DeleteImage(product.img.cloudinary_ID);
-      await product.remove({ _id: product.id });
-      return res.status(200).json({ msg: "Product deleted" });
-    } catch (err) {
-      return res.status(409).json({ msg: "Error deleting product" });
+  productDelete: asyncHandler(async (req, res) => {
+    const product = await Product.findOne({
+      _id: req.params.id,
+      vendor: req.user._id,
+    });
+    if (!product) {
+      return res.status(404).json({ msg: "Product not found" });
     }
-  },
+    await Cloudinary.DeleteImage(product.img.cloudinary_ID);
+    await product.remove({ _id: product.id });
+    return res.status(200).json({ msg: "Product deleted" });
+  }),
 
   productGetAll: async (req, res, next) => {
     try {
@@ -114,35 +108,27 @@ module.exports = {
     }
   },
 
-  productGetByVendor: async (req, res) => {
-    try {
-      const products = await Product.find({ vendor: req.user._id });
-      if (!products) {
-        return next(new ErrorHandler(404, "No Product Found"));
-      }
-      return res.status(200).json(products);
-    } catch (err) {
-      return res.status(409).json({ msg: "Error while fetching all products" });
+  productGetByVendor: asyncHandler(async (req, res) => {
+    const products = await Product.find({ vendor: req.user._id });
+    if (!products) {
+      return next(new ErrorHandler(404, "No Product Found"));
     }
-  },
+    return res.status(200).json(products);
+  }),
 
-  productSearch: async (req, res) => {
-    try {
-      let products = [];
-      let key = new RegExp(".*" + req.body.search + ".*");
-      products = await Product.find({
-        $or: [{ name: key }, { section: key }],
+  productSearch: asyncHandler(async (req, res) => {
+    let products = [];
+    let key = new RegExp(".*" + req.body.search + ".*");
+    products = await Product.find({
+      $or: [{ name: key }, { section: key }],
+    });
+    if (isEmpty(products)) {
+      products = await Product.find({});
+      return res.status(204).json({
+        msg: "We do not find any product related to your search keyword.",
+        products,
       });
-      if (isEmpty(products)) {
-        products = await Product.find({});
-        return res.status(204).json({
-          msg: "We do not find any product related to your search keyword.",
-          products,
-        });
-      }
-      return res.status(200).json({ products });
-    } catch (err) {
-      return res.status(409).json({ msg: "Error while fetching all products" });
     }
-  },
+    return res.status(200).json({ products });
+  }),
 };
