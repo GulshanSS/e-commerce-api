@@ -1,7 +1,13 @@
+const ProductController = require("./Product");
+const AuthController = require("./Auth");
+const UserController = require("./User");
+const ForgotPasswordController = require("./ForgotPassword");
+const EmailVerificationController = require("./EmailVerification");
+
 module.exports = {
-  ProductController: require("./Product"),
-  AuthController: require("./Auth"),
-  UserController: require("./User"),
-  ForgotPasswordController: require("./ForgotPassword"),
-  EmailVerificationController: require("./EmailVerification"),
+  ProductController,
+  AuthController,
+  UserController,
+  ForgotPasswordController,
+  EmailVerificationController,
 };

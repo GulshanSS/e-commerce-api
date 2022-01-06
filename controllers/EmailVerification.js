@@ -3,37 +3,36 @@ const { Email } = require("../utils");
 const ErrorHandler = require("../utils/errorHandler");
 const asyncHandler = require("../middlewares/asyncHandler");
 
-module.exports = {
-  sendEmailVerificationLink: asyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) {
-      next(new ErrorHandler(404, "Email not found"));
-    }
-    await Email.generateVerificationLink(
-      user._id,
-      user.email,
-      "Email Verification link",
-      "emailVerify",
-      "Verify"
-    );
-    return res.status(200).json({
-      msg: "Verification link sent to your registered mail account",
-    });
-  }),
-  verifyEmail: asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (!user) next(new ErrorHandler(404, "User not found"));
+exports.sendEmailVerificationLink = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    next(new ErrorHandler(404, "Email not found"));
+  }
+  await Email.generateVerificationLink(
+    user._id,
+    user.email,
+    "Email Verification link",
+    "emailVerify",
+    "Verify"
+  );
+  return res.status(200).json({
+    msg: "Verification link sent to your registered mail account",
+  });
+});
 
-    const token = await Token.findOne({
-      userId: user._id,
-      token: req.params.token,
-    });
-    if (!token) next(new ErrorHandler(404, "Token not Found"));
+exports.verifyEmail = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) next(new ErrorHandler(404, "User not found"));
 
-    user.active = true;
-    await user.save();
-    await token.delete();
+  const token = await Token.findOne({
+    userId: user._id,
+    token: req.params.token,
+  });
+  if (!token) next(new ErrorHandler(404, "Token not Found"));
 
-    return res.status(202).json({ msg: "Email Verified" });
-  }),
-};
+  user.active = true;
+  await user.save();
+  await token.delete();
+
+  return res.status(202).json({ msg: "Email Verified" });
+});
