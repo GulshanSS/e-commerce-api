@@ -12,8 +12,6 @@ const Public = require("./routes/Public");
 const { AuthRoutes } = require("./routes/Auth");
 const errorMiddleware = require("./middlewares/errors");
 
-config.DBConfig();
-config.CloudinaryConfig();
 app.use(express.json());
 app.use(
   cors({
@@ -21,8 +19,11 @@ app.use(
   })
 );
 
+config.DB();
+config.Cloudinary();
+
 app.use(passport.initialize());
-require("./config/passport")(passport);
+config.Passport(passport);
 
 app.use(createAdmin);
 
@@ -46,6 +47,8 @@ app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, ()=> {
-  console.log(`Server started on PORT: ${PORT} in ${process.env.NODE_ENV} mode.`)
+app.listen(PORT, () => {
+  console.log(
+    `Server started on PORT: ${PORT} in ${process.env.NODE_ENV} mode.`
+  );
 });
