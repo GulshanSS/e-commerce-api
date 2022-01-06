@@ -5,7 +5,7 @@ const {
   UserController,
   EmailVerificationController,
 } = require("../../controllers");
-const { grantAccess, verifiedEmail } = require("../../middlewares/auth");
+const { authorize, verifiedEmail } = require("../../middlewares/auth");
 const {
   productCheck,
   validateResetPassword,
@@ -13,21 +13,21 @@ const {
 
 User.get(
   "/details",
-  grantAccess("readOwn", "profile"),
+  authorize("user"),
   UserController.userDetails
 );
 
-User.get("/cart", grantAccess("readOwn", "product"), UserController.userCart);
+User.get("/cart", authorize("user"), UserController.userCart);
 
 User.get(
   "/myOrders",
-  grantAccess("readOwn", "product"),
+  authorize("user"),
   UserController.userMyOrder
 );
 
 User.post(
   "/:id/addToCart",
-  grantAccess("readAny", "product"),
+  authorize("user"),
   verifiedEmail,
   productCheck,
   UserController.userAddToCart
@@ -35,7 +35,7 @@ User.post(
 
 User.post(
   "/:id/buyNow",
-  grantAccess("readAny", "product"),
+  authorize("user"),
   verifiedEmail,
   productCheck,
   UserController.userOrder
@@ -43,7 +43,7 @@ User.post(
 
 User.post(
   "/resetpassword",
-  grantAccess("updateOwn", "profile"),
+  authorize("user"),
   verifiedEmail,
   validateResetPassword,
   UserController.resetPassword
@@ -51,14 +51,14 @@ User.post(
 
 User.post(
   "/:id/like",
-  grantAccess("readAny", "product"),
+  authorize("user"),
   verifiedEmail,
   UserController.likeProduct
 );
 
 User.post(
   "/verify",
-  grantAccess("readOwn", "profile"),
+  authorize("user"),
   EmailVerificationController.sendEmailVerificationLink
 );
 

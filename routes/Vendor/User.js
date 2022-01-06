@@ -5,18 +5,18 @@ const {
   UserController,
   EmailVerificationController,
 } = require("../../controllers");
-const { grantAccess, verifiedEmail } = require("../../middlewares/auth");
+const { authorize, verifiedEmail } = require("../../middlewares/auth");
 const { validateResetPassword } = require("../../middlewares/validation");
 
 User.get(
   "/details",
-  grantAccess("readOwn", "profile"),
+  authorize("vendor"),
   UserController.userDetails
 );
 
 User.post(
   "/resetpassword",
-  grantAccess("readOwn", "profile"),
+  authorize("vendor"),
   verifiedEmail,
   validateResetPassword,
   UserController.resetPassword
@@ -24,13 +24,13 @@ User.post(
 
 User.post(
   "/deleteApproval",
-  grantAccess("readOwn", "profile"),
+  authorize("vendor"),
   UserController.deleteApproval
 );
 
 User.post(
   "/verify",
-  grantAccess("readOwn", "profile"),
+  authorize("vendor"),
   EmailVerificationController.sendEmailVerificationLink
 );
 

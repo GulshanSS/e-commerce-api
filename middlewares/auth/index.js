@@ -1,8 +1,8 @@
-const { grantAccess, verifiedEmail } = require("./Access");
+const { authorize, verifiedEmail } = require("./Access");
 const { createAdmin } = require("./AdminGenerate");
 
 module.exports = {
-  grantAccess,
+  authorize,
   verifiedEmail,
   createAdmin,
 };

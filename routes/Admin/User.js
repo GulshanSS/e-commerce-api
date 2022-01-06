@@ -2,29 +2,17 @@ const express = require("express");
 const User = express.Router();
 
 const { UserController } = require("../../controllers");
-const { grantAccess } = require("../../middlewares/auth");
+const { authorize } = require("../../middlewares/auth");
 
-User.get(
-  "/getAllUser",
-  grantAccess("readAny", "profile"),
-  UserController.userGetAll
-);
+User.get("/getAllUser", authorize("admin"), UserController.userGetAll);
 
-User.get(
-  "/:id/details",
-  grantAccess("readAny", "profile"),
-  UserController.userGetOne
-);
+User.get("/:id/details", authorize("admin"), UserController.userGetOne);
 
-User.delete(
-  "/:id/delete",
-  grantAccess("deleteAny", "profile"),
-  UserController.userDelete
-);
+User.delete("/:id/delete", authorize("admin"), UserController.userDelete);
 
 User.post(
   "/:id/cancelDeleteApproval",
-  grantAccess("deleteAny", "profile"),
+  authorize("admin"),
   UserController.cancelDeleteApproval
 );
 

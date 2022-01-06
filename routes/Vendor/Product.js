@@ -3,31 +3,31 @@ const Product = express.Router();
 
 const { ProductController } = require("../../controllers");
 const { validateProduct } = require("../../middlewares/validation");
-const { grantAccess } = require("../../middlewares/auth");
+const { authorize } = require("../../middlewares/auth");
 
 Product.get(
   "/products",
-  grantAccess("updateOwn", "product"),
+  authorize("vendor"),
   ProductController.productGetByVendor
 );
 
 Product.post(
   "/add",
   validateProduct,
-  grantAccess("updateOwn", "product"),
+  authorize("vendor"),
   ProductController.productAdd
 );
 
 Product.put(
   "/:id/update",
-  grantAccess("updateOwn", "product"),
+  authorize("vendor"),
   validateProduct,
   ProductController.productUpdate
 );
 
 Product.delete(
   "/:id/delete",
-  grantAccess("deleteOwn", "product"),
+  authorize("vendor"),
   ProductController.productDelete
 );
 
