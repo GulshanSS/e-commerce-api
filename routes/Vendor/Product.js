@@ -2,7 +2,6 @@ const express = require("express");
 const Product = express.Router();
 
 const { ProductController } = require("../../controllers");
-const { validateProduct } = require("../../middlewares/validation");
 const { authorize } = require("../../middlewares/auth");
 
 Product.get(
@@ -13,7 +12,6 @@ Product.get(
 
 Product.post(
   "/add",
-  validateProduct,
   authorize("vendor"),
   ProductController.productAdd
 );
@@ -21,7 +19,6 @@ Product.post(
 Product.put(
   "/:id/update",
   authorize("vendor"),
-  validateProduct,
   ProductController.productUpdate
 );
 

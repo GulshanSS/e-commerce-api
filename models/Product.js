@@ -3,15 +3,16 @@ const mongoose = require("mongoose");
 const ProductSchema = mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "Name is required"],
   },
   price: {
-    type: String,
-    required: true,
+    type: Number,
+    required: [true, "Price is required"],
+    min: [0, "Minimum price is Rs. 0"],
   },
   details: {
     type: String,
-    required: true,
+    required: [true, "Description is required"],
   },
   img: {
     cloudinary_ID: {
@@ -23,7 +24,7 @@ const ProductSchema = mongoose.Schema({
   },
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    //required: true,
     ref: "user",
   },
   likes: {
@@ -38,9 +39,9 @@ const ProductSchema = mongoose.Schema({
   },
   section: {
     type: String,
-    required: true,
+    required: [true, "Section is required"],
   },
-  date: {
+  createdAt: {
     type: Date,
     default: Date.now(),
   },
