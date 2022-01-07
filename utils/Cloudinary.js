@@ -11,7 +11,7 @@ const CloudinaryPreSets = (section, name) => {
   };
 };
 
-exports.CloudinaryUpload = asyncHandler(async (image, section, name) => {
+exports.CloudinaryUpload = async (image, section, name) => {
   const result = await cloudinary.uploader.upload(
     image,
     CloudinaryPreSets(section, name)
@@ -20,10 +20,10 @@ exports.CloudinaryUpload = asyncHandler(async (image, section, name) => {
     cloudinary_ID: result.public_id,
     path: result.url,
   };
-});
+};
 
-exports.DeleteImage = asyncHandler(async (id) => {
+exports.DeleteImage = async (id) => {
   if (id != process.env.PRODUCT_DEFAULT_PUBLIC_ID) {
     await cloudinary.uploader.destroy(id);
   }
-});
+};

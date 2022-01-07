@@ -1,23 +1,48 @@
 const mongoose = require("mongoose");
+const { Bcrypt } = require("../utils");
+const ErrorHandler = require("../utils/errorHandler");
 
 const UserSchema = mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "Name is required"],
+    minlength: [3, "Name should be atleast 3 characters long."],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required"],
+    validate: {
+      validator: function (e) {
+        return e.match("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+      },
+      message: "Email is not in proper format",
+    },
+    unique: true,
   },
   dob: {
     type: Date,
   },
-  mobile_no: {
+  mobile: {
     type: String,
+    required: [true, "Mobile No. is required"],
+    validate: {
+      validator: function (m) {
+        return m.match("^[0-9]{10}$");
+      },
+      message: "Mobile No. must contain 10 digits",
+    },
   },
   password: {
     type: String,
-    required: true,
+    required: [true, "Password is required"],
+    minlength: [8, "Password must be at least 8 characters long"],
+    validate: {
+      validator: function (p) {
+        return p.match("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])");
+      },
+      message:
+        "Password must contain atleast 1 lowercase, 1 uppercase & 1 special characters & 1 numeric digit",
+    },
   },
   role: {
     type: String,
@@ -27,6 +52,8 @@ const UserSchema = mongoose.Schema({
   },
   address: {
     type: String,
+    required: [true, "Address is required"],
+    minlength: [10, "Address is invalid"],
   },
   cart: {
     type: [mongoose.Schema.Types.ObjectId],
@@ -49,6 +76,21 @@ const UserSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+});
+
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
+  this.password = await Bcrypt.genHash(this.password, 10);
+  next();
+});
+
+UserSchema.post("save", async function (err, doc, next) {
+  if (err.name === "MongoServerError" && err.code === 11000) {
+    next(new ErrorHandler(406, "Email already registered"));
+  }
+  next();
 });
 
 module.exports = mongoose.model("user", UserSchema);

@@ -6,10 +6,6 @@ const {
   EmailVerificationController,
 } = require("../../controllers");
 const { authorize, verifiedEmail } = require("../../middlewares/auth");
-const {
-  productCheck,
-  validateResetPassword,
-} = require("../../middlewares/validation");
 
 User.get(
   "/details",
@@ -29,7 +25,6 @@ User.post(
   "/:id/addToCart",
   authorize("user"),
   verifiedEmail,
-  productCheck,
   UserController.userAddToCart
 );
 
@@ -37,7 +32,6 @@ User.post(
   "/:id/buyNow",
   authorize("user"),
   verifiedEmail,
-  productCheck,
   UserController.userOrder
 );
 
@@ -45,7 +39,6 @@ User.post(
   "/resetpassword",
   authorize("user"),
   verifiedEmail,
-  validateResetPassword,
   UserController.resetPassword
 );
 

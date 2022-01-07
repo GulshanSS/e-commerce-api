@@ -6,13 +6,12 @@ const ErrorHandler = require("../utils/errorHandler");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 exports.Register = asyncHandler(async (req, res) => {
-  const hash = await Bcrypt.genHash(req.body.password);
   const user = await new User({
     name: req.body.name,
     email: req.body.email,
     dob: req.body.now,
-    mobile_no: req.body.mobile,
-    password: hash,
+    mobile: req.body.mobile,
+    password: req.body.password,
     address: req.body.address,
     gender: req.body.gender,
     role: req.body.role,

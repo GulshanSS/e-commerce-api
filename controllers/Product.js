@@ -99,19 +99,3 @@ exports.productGetByVendor = asyncHandler(async (req, res) => {
   }
   return res.status(200).json(products);
 });
-
-exports.productSearch = asyncHandler(async (req, res) => {
-  let products = [];
-  let key = new RegExp(".*" + req.body.search + ".*");
-  products = await Product.find({
-    $or: [{ name: key }, { section: key }],
-  });
-  if (isEmpty(products)) {
-    products = await Product.find({});
-    return res.status(204).json({
-      msg: "We do not find any product related to your search keyword.",
-      products,
-    });
-  }
-  return res.status(200).json({ products });
-});

@@ -6,7 +6,6 @@ const {
   EmailVerificationController,
 } = require("../../controllers");
 const { authorize, verifiedEmail } = require("../../middlewares/auth");
-const { validateResetPassword } = require("../../middlewares/validation");
 
 User.get(
   "/details",
@@ -18,7 +17,6 @@ User.post(
   "/resetpassword",
   authorize("vendor"),
   verifiedEmail,
-  validateResetPassword,
   UserController.resetPassword
 );
 
