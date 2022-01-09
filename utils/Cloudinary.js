@@ -1,7 +1,6 @@
 const cloudinary = require("cloudinary").v2;
 const asyncHandler = require("../middlewares/asyncHandler");
 
-
 const CloudinaryPreSets = (section, name) => {
   return {
     folder: `eCommerce/products/${section}`,
@@ -19,6 +18,7 @@ exports.CloudinaryUpload = async (image, section, name) => {
   return {
     cloudinary_ID: result.public_id,
     path: result.url,
+    origin_path: image,
   };
 };
 

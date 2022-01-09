@@ -1,7 +1,4 @@
 const nodemailer = require("nodemailer");
-const { Token } = require("../models/Token");
-const crypto = require("crypto");
-const asyncHandler = require("../middlewares/asyncHandler");
 
 exports.SendEmail = async (email, subject, data, btnText) => {
   const transporter = nodemailer.createTransport({
@@ -27,22 +24,4 @@ exports.SendEmail = async (email, subject, data, btnText) => {
       "</button>" +
       "</form>",
   });
-};
-
-exports.generateVerificationLink = async function (
-  id,
-  email,
-  msg,
-  linkroute,
-  btnText
-) {
-  let token = await Token.findOne({ userId: id });
-  if (!token) {
-    token = await new Token({
-      userId: id,
-      token: crypto.randomBytes(32).toString("hex"),
-    }).save();
-  }
-  const link = `${linkroute}/${id}/${token.token}`;
-  await this.SendEmail(email, msg, link, btnText);
 };

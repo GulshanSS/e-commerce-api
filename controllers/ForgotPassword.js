@@ -4,7 +4,7 @@ const { Email } = require("../utils");
 const ErrorHandler = require("../utils/errorHandler");
 const asyncHandler = require("../middlewares/asyncHandler");
 
-exports.sendLink = asyncHandler(async (req, res) => {
+exports.sendLink = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     next(new ErrorHandler(404, "Email not found"));
@@ -21,7 +21,7 @@ exports.sendLink = asyncHandler(async (req, res) => {
     .json({ msg: "Reset link sent to your registered mail account" });
 });
 
-exports.forgotPass = asyncHandler(async (req, res) => {
+exports.forgotPass = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) next(new ErrorHandler(404, "User not found"));
 

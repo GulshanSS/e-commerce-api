@@ -1,10 +1,11 @@
-const { User, Product } = require("../models");
 const bcrypt = require("bcrypt");
 const isEmpty = require("is-empty");
+
+const { User, Product } = require("../models");
 const ErrorHandler = require("../utils/errorHandler");
 const asyncHandler = require("../middlewares/asyncHandler");
 
-exports.userGetAll = asyncHandler(async (req, res) => {
+exports.userGetAll = asyncHandler(async (req, res, next) => {
   const users = await User.find({});
   if (!users) {
     next(new ErrorHandler(404, "User not found"));
@@ -12,7 +13,7 @@ exports.userGetAll = asyncHandler(async (req, res) => {
   return res.status(200).json(users);
 });
 
-exports.userGetOne = asyncHandler(async (req, res) => {
+exports.userGetOne = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) {
     next(new ErrorHandler(404, "User not found"));
@@ -20,7 +21,7 @@ exports.userGetOne = asyncHandler(async (req, res) => {
   return res.status(200).json(user);
 });
 
-exports.userDetails = asyncHandler(async (req, res) => {
+exports.userDetails = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   if (!user) {
     next(new ErrorHandler(401, "Please Login to see the details"));
@@ -28,7 +29,7 @@ exports.userDetails = asyncHandler(async (req, res) => {
   return res.status(200).json(user);
 });
 
-exports.userDelete = asyncHandler(async (req, res) => {
+exports.userDelete = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({
     id: req.params.id,
     deleteApproval: true,
@@ -42,7 +43,7 @@ exports.userDelete = asyncHandler(async (req, res) => {
   return res.status(200).json({ msg: "Vendor deleted Successfully" });
 });
 
-exports.userCart = asyncHandler(async (req, res) => {
+exports.userCart = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).populate("cart");
   if (isEmpty(user.cart)) {
     next(new ErrorHandler(404, "No Products added to cart"));
@@ -50,7 +51,7 @@ exports.userCart = asyncHandler(async (req, res) => {
   return res.status(200).json(user.cart);
 });
 
-exports.userAddToCart = asyncHandler(async (req, res) => {
+exports.userAddToCart = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   if (user.cart.find((ele) => req.params.id.toString() === ele.toString())) {
     return res
@@ -70,7 +71,7 @@ exports.userAddToCart = asyncHandler(async (req, res) => {
   return res.status(201).json({ msg: "Product added to cart" });
 });
 
-exports.userMyOrder = asyncHandler(async (req, res) => {
+exports.userMyOrder = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).populate("order");
   if (isEmpty(user.order)) {
     next(new ErrorHandler(404, "No Products Bought"));
@@ -78,7 +79,7 @@ exports.userMyOrder = asyncHandler(async (req, res) => {
   return res.status(200).json(user.order);
 });
 
-exports.userOrder = asyncHandler(async (req, res) => {
+exports.userOrder = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   if (user.cart.find((ele) => req.params.id.toString() === ele.toString())) {
     user.cart = [...user.cart].filter(
@@ -105,7 +106,7 @@ exports.userOrder = asyncHandler(async (req, res) => {
   });
 });
 
-exports.resetPassword = asyncHandler(async (req, res) => {
+exports.resetPassword = asyncHandler(async (req, res, next) => {
   const isMatch = await bcrypt.compare(req.body.oldpassword, req.user.password);
   if (isMatch) {
     if (req.body.oldpassword === req.body.newpassword) {
@@ -127,7 +128,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
   }
 });
 
-exports.likeProduct = asyncHandler(async (req, res) => {
+exports.likeProduct = asyncHandler(async (req, res, next) => {
   let updatedUsers = [];
   const product = await Product.findById(req.params.id);
   if (!product) {
@@ -151,7 +152,7 @@ exports.likeProduct = asyncHandler(async (req, res) => {
   return res.status(202).json(product);
 });
 
-exports.deleteApproval = asyncHandler(async (req, res) => {
+exports.deleteApproval = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ _id: req.user._id, role: "vendor" });
   if (!user) {
     next(new ErrorHandler(404, "Vendor Not Found"));
@@ -161,7 +162,7 @@ exports.deleteApproval = asyncHandler(async (req, res) => {
   return res.status(201).json({ msg: "Submitted for Delete Approval" });
 });
 
-exports.cancelDeleteApproval = asyncHandler(async (req, res) => {
+exports.cancelDeleteApproval = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ _id: req.params.id, role: "vendor" });
   if (!user) {
     next(new ErrorHandler(404, "Vendor Not Found"));

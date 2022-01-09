@@ -3,7 +3,7 @@ const { Email } = require("../utils");
 const ErrorHandler = require("../utils/errorHandler");
 const asyncHandler = require("../middlewares/asyncHandler");
 
-exports.sendEmailVerificationLink = asyncHandler(async (req, res) => {
+exports.sendEmailVerificationLink = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     next(new ErrorHandler(404, "Email not found"));
@@ -20,7 +20,7 @@ exports.sendEmailVerificationLink = asyncHandler(async (req, res) => {
   });
 });
 
-exports.verifyEmail = asyncHandler(async (req, res) => {
+exports.verifyEmail = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) next(new ErrorHandler(404, "User not found"));
 

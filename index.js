@@ -35,13 +35,13 @@ app.use("/api/customer", passport.authenticate("jwt", { session: false }), [
   Customer.UserRoutes,
 ]);
 
-app.use(
-  "/api/vendor",
-  //passport.authenticate("jwt", { session: false }),
-  [Vendor.ProductRoutes, Vendor.UserRoutes]
-);
+app.use("/api/vendor", passport.authenticate("jwt", { session: false }), [
+  Vendor.ProductRoutes,
+  Vendor.UserRoutes,
+]);
 
 app.use("/api", [AuthRoutes, Public.ProductRoutes]);
+
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });

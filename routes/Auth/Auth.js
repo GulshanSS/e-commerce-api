@@ -2,9 +2,9 @@ const express = require("express");
 const Auth = express.Router();
 
 const {
+  EmailVerificationController,
   AuthController,
   ForgotPasswordController,
-  EmailVerificationController,
 } = require("../../controllers");
 
 Auth.post("/register", AuthController.Register);

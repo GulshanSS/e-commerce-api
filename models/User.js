@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
-const { Bcrypt } = require("../utils");
+const Token = require("./Token");
+const crypto = require("crypto");
+
+const { Bcrypt, Email } = require("../utils");
 const ErrorHandler = require("../utils/errorHandler");
 
 const UserSchema = mongoose.Schema({
@@ -92,5 +95,23 @@ UserSchema.post("save", async function (err, doc, next) {
   }
   next();
 });
+
+UserSchema.methods.generateVerificationLink = async function (
+  id,
+  email,
+  msg,
+  linkroute,
+  btnText
+) {
+  let token = await Token.findOne({ userId: id });
+  if (!token) {
+    token = await new Token({
+      userId: id,
+      token: crypto.randomBytes(32).toString("hex"),
+    }).save();
+  }
+  const link = `${linkroute}/${id}/${token.token}`;
+  await Email.SendEmail(email, msg, link, btnText);
+};
 
 module.exports = mongoose.model("user", UserSchema);

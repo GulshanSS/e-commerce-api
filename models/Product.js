@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Cloudinary } = require("../utils");
 
 const ProductSchema = mongoose.Schema({
   name: {
@@ -19,6 +20,9 @@ const ProductSchema = mongoose.Schema({
       type: String,
     },
     path: {
+      type: String,
+    },
+    origin_path: {
       type: String,
     },
   },
@@ -45,6 +49,38 @@ const ProductSchema = mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+});
+
+ProductSchema.pre("save", async function (next) {
+  if (!this.isModified("img.origin_path")) {
+    next();
+  } else if (
+    this.isModified("img.origin_path") &&
+    this.img.origin_path != process.env.PRODUCT_DEFAULT_NAME
+  ) {
+    await Cloudinary.DeleteImage(doc.img.cloudinary_ID);
+  }
+
+  if (this.img.origin_path === "undefined" || this.img.origin_path === "") {
+    this.img.origin_path = process.env.PRODUCT_DEFAULT_NAME;
+    this.img.cloudinary_ID = process.env.PRODUCT_DEFAULT_PUBLIC_ID;
+    this.img.path = process.env.PRODUCT_DEFAULT_URL;
+  } else {
+    this.img = await Cloudinary.CloudinaryUpload(
+      req.body.image,
+      req.body.section,
+      req.body.name
+    );
+  }
+
+  next();
+});
+
+ProductSchema.post("remove", async function (doc, next) {
+  if (this.img.origin_path != process.env.PRODUCT_DEFAULT_NAME) {
+    await Cloudinary.DeleteImage(doc.img.cloudinary_ID);
+  }
+  next();
 });
 
 module.exports = mongoose.model("product", ProductSchema);

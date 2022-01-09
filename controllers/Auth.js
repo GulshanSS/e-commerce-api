@@ -1,11 +1,10 @@
 const { Bcrypt } = require("../utils");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
-const { Email } = require("../utils");
 const ErrorHandler = require("../utils/errorHandler");
 const asyncHandler = require("../middlewares/asyncHandler");
 
-exports.Register = asyncHandler(async (req, res) => {
+exports.Register = asyncHandler(async (req, res, next) => {
   const user = await new User({
     name: req.body.name,
     email: req.body.email,
@@ -16,7 +15,10 @@ exports.Register = asyncHandler(async (req, res) => {
     gender: req.body.gender,
     role: req.body.role,
   }).save();
-  await Email.generateVerificationLink(
+  if (!user) {
+    next(406, "Cannot Register the user. Try again later!!");
+  }
+  await user.generateVerificationLink(
     user._id,
     user.email,
     "Email Verification",
@@ -28,7 +30,7 @@ exports.Register = asyncHandler(async (req, res) => {
   });
 });
 
-exports.Login = asyncHandler(async (req, res) => {
+exports.Login = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     next(new ErrorHandler(404, "Email Not Found"));
