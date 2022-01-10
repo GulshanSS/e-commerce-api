@@ -85,7 +85,10 @@ UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
-  this.password = await Bcrypt.genHash(this.password, 10);
+  this.password = await Bcrypt.genHash(
+    this.password || process.env.ADMIN_PASS,
+    10
+  );
   next();
 });
 
