@@ -9,7 +9,7 @@ exports.createAdmin = asyncHandler(async (req, res, next) => {
     const user = new User({
       name: process.env.ADMIN_NAME,
       email: process.env.ADMIN_EMAIL,
-      password: await bcrypt.hash(process.env.ADMIN_PASS, 10),
+      password: process.env.ADMIN_PASS,
       role: "admin",
     });
     await user.save();
